@@ -36,15 +36,10 @@
         .lightred { background-color: #954848; }
         .ct-label { color: #fff !important; fill: #fff !important; }
         .ct-grid{ stroke:#fff !important; }
-        .ct-chart .ct-series.ct-series-a .ct-line, .ct-chart .ct-series.ct-series-a .ct-point { stroke: #0078D4  !important; }
-        .ct-chart .ct-series.ct-series-b .ct-line, .ct-chart .ct-series.ct-series-b .ct-point { stroke: #6dc428 !important; }
-        .ct-chart .ct-series.ct-series-c .ct-line, .ct-chart .ct-series.ct-series-c .ct-point { stroke: #e58f1d !important; }
-        .ct-chart .ct-series.ct-series-d .ct-line, .ct-chart .ct-series.ct-series-d .ct-point { stroke: #c71bca !important; }
-
-        .ct-chart-bar .ct-series.ct-series-a .ct-bar.linecoverage { stroke: #0078D4 !important;}
-        .ct-chart-bar .ct-series.ct-series-a .ct-bar.branchcoverage { stroke: #6dc428 !important;}
-        .ct-chart-bar .ct-series.ct-series-a .ct-bar.codeelementcoverage { stroke: #e58f1d !important;}
-        .ct-chart-bar .ct-series.ct-series-a .ct-bar.fullcodeelementcoverage { stroke: #c71bca !important;}
+        .ct-chart .ct-series.ct-series-a .ct-line, .ct-chart .ct-series.ct-series-a .ct-point, .ct-chart .ct-series.ct-series-a .ct-bar { stroke: #0078D4  !important; }
+        .ct-chart .ct-series.ct-series-b .ct-line, .ct-chart .ct-series.ct-series-b .ct-point, .ct-chart .ct-series.ct-series-b .ct-bar { stroke: #6dc428 !important; }
+        .ct-chart .ct-series.ct-series-c .ct-line, .ct-chart .ct-series.ct-series-c .ct-point, .ct-chart .ct-series.ct-series-c .ct-bar { stroke: #e58f1d !important; }
+        .ct-chart .ct-series.ct-series-d .ct-line, .ct-chart .ct-series.ct-series-d .ct-point, .ct-chart .ct-series.ct-series-d .ct-bar { stroke: #c71bca !important; }
 
         .linecoverage { background-color: #0078D4; }
         .branchcoverage { background-color: #6dc428; }

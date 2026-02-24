@@ -218,19 +218,13 @@ var renderDiffChart = function (chart) {
 
     var chartData = window[chart.getAttribute('data-data')];
     var options = {
-        reverseData: true,
-        horizontalBars: true,
         low: -chartData.minMaxValue,
         high: chartData.minMaxValue,
-        axisX: {
-            onlyInteger: true
-        },
         axisY: {
-            offset: 150
+            onlyInteger: true
         }
     };
     var barChart = new Chartist.Bar(chart, {
-        labels: chartData.labels,
         series: chartData.series
     }, options);
 
@@ -241,30 +235,48 @@ var renderDiffChart = function (chart) {
     chart.appendChild(tooltip);
 
     /* Tooltips */
+    /* Tooltips */
+    var showToolTip = function () {
+        var index = this.getAttribute('ct:meta');
+
+        tooltip.innerHTML = chartData.tooltips[index];
+        tooltip.style.display = 'block';
+    };
+
     var moveToolTip = function (event) {
         var box = chart.getBoundingClientRect();
         var left = event.pageX - box.left - window.pageXOffset;
+        var top = event.pageY - box.top - window.pageYOffset;
 
         left = left + 20;
+        top = top - tooltip.offsetHeight / 2;
+
         if (left + tooltip.offsetWidth > box.width) {
             left -= tooltip.offsetWidth + 40;
         }
 
-        tooltip.style.left = left + 'px';
+        if (top < 0) {
+            top = 0;
+        }
 
-        tooltip.style.display = 'block';
+        if (top + tooltip.offsetHeight > box.height) {
+            top = box.height - tooltip.offsetHeight;
+        }
+
+        tooltip.style.left = left + 'px';
+        tooltip.style.top = top + 'px';
     };
 
     var hideToolTip = function () {
         tooltip.style.display = 'none';
     };
     chart.addEventListener('mousemove', moveToolTip);
-    chart.addEventListener('mouseout', hideToolTip);
 
     barChart.on('created', function () {
         var chartBars = chart.getElementsByClassName('ct-bar');
         for (i = 0, l = chartBars.length; i < l; i++) {
-            chartBars[i].classList.add(chartBars[chartBars.length - 1 - i].getAttribute('ct:meta'));
+            chartBars[i].addEventListener('mousemove', showToolTip);
+            chartBars[i].addEventListener('mouseout', hideToolTip);
         }
     });
 };
@@ -278,10 +290,10 @@ var assemblies = [
   {
     "name": "Sample",
     "classes": [
-      { "name": "Sample.PartialClass", "rp": "Sample_PartialClass.html", "cl": 12, "ucl": 10, "cal": 22, "tl": 53, "cb": 1, "tb": 2, "cm": 3, "fcm": 2, "tm": 6, "lch": [40.9,54.5,59,59,45.4,50,50,59,59,54.5], "bch": [50,40,40,45,45,45,45,45,45,50], "mch": [50,33.3,50,66.6,66.6,66.6,83.3,83.3,100,50], "mfch": [33.3,33.3,50,50,50,50,50,50,50,33.3], "hc": [{ "et": "01.02.2022 - 20:50:35", "cl": 9, "ucl": 13, "cal": 22, "tl": 53, "lcq": 40.9, "cb": 10, "tb": 20, "bcq": 50, "cm": 3, "fcm": 2, "tm": 6, "mcq": 50, "mfcq": 33.3 }, { "et": "02.02.2022 - 20:50:35", "cl": 12, "ucl": 10, "cal": 22, "tl": 53, "lcq": 54.5, "cb": 8, "tb": 20, "bcq": 40, "cm": 2, "fcm": 2, "tm": 6, "mcq": 33.3, "mfcq": 33.3 }, { "et": "03.02.2022 - 20:50:35", "cl": 13, "ucl": 9, "cal": 22, "tl": 53, "lcq": 59, "cb": 8, "tb": 20, "bcq": 40, "cm": 3, "fcm": 3, "tm": 6, "mcq": 50, "mfcq": 50 }, { "et": "04.02.2022 - 20:50:35", "cl": 13, "ucl": 9, "cal": 22, "tl": 53, "lcq": 59, "cb": 9, "tb": 20, "bcq": 45, "cm": 4, "fcm": 3, "tm": 6, "mcq": 66.6, "mfcq": 50 }, { "et": "05.02.2022 - 20:50:35", "cl": 10, "ucl": 12, "cal": 22, "tl": 53, "lcq": 45.4, "cb": 9, "tb": 20, "bcq": 45, "cm": 4, "fcm": 3, "tm": 6, "mcq": 66.6, "mfcq": 50 }, { "et": "06.02.2022 - 20:50:35", "cl": 11, "ucl": 11, "cal": 22, "tl": 53, "lcq": 50, "cb": 9, "tb": 20, "bcq": 45, "cm": 4, "fcm": 3, "tm": 6, "mcq": 66.6, "mfcq": 50 }, { "et": "07.02.2022 - 20:50:35", "cl": 11, "ucl": 11, "cal": 22, "tl": 53, "lcq": 50, "cb": 9, "tb": 20, "bcq": 45, "cm": 5, "fcm": 3, "tm": 6, "mcq": 83.3, "mfcq": 50 }, { "et": "08.02.2022 - 20:50:35", "cl": 13, "ucl": 9, "cal": 22, "tl": 53, "lcq": 59, "cb": 9, "tb": 20, "bcq": 45, "cm": 5, "fcm": 3, "tm": 6, "mcq": 83.3, "mfcq": 50 }, { "et": "09.02.2022 - 20:50:35", "cl": 13, "ucl": 9, "cal": 22, "tl": 53, "lcq": 59, "cb": 9, "tb": 20, "bcq": 45, "cm": 6, "fcm": 3, "tm": 6, "mcq": 100, "mfcq": 50 }, { "et": "21.02.2026 - 22:51:41", "cl": 12, "ucl": 10, "cal": 22, "tl": 53, "lcq": 54.5, "cb": 1, "tb": 2, "bcq": 50, "cm": 3, "fcm": 2, "tm": 6, "mcq": 50, "mfcq": 33.3 }], "metrics": { "cc": 1,  "npth": 0,  "seq": 0,  "bcov": 0,  "crp": 2 } },
-      { "name": "Test.Program", "rp": "Sample_Program.html", "cl": 15, "ucl": 0, "cal": 15, "tl": 84, "cb": 0, "tb": 0, "cm": 3, "fcm": 3, "tm": 3, "lch": [79.5,79.5,79.5,100], "bch": [], "mch": [66.6,66.6,66.6,100], "mfch": [0,16.6,33.3,100], "hc": [{ "et": "01.02.2022 - 20:50:35", "cl": 35, "ucl": 9, "cal": 44, "tl": 84, "lcq": 79.5, "cb": 0, "tb": 0, "bcq": 0, "cm": 4, "fcm": 0, "tm": 6, "mcq": 66.6, "mfcq": 0 }, { "et": "02.02.2022 - 20:50:35", "cl": 35, "ucl": 9, "cal": 44, "tl": 84, "lcq": 79.5, "cb": 0, "tb": 0, "bcq": 0, "cm": 4, "fcm": 0, "tm": 6, "mcq": 66.6, "mfcq": 0 }, { "et": "03.02.2022 - 20:50:35", "cl": 35, "ucl": 9, "cal": 44, "tl": 84, "lcq": 79.5, "cb": 0, "tb": 0, "bcq": 0, "cm": 4, "fcm": 0, "tm": 6, "mcq": 66.6, "mfcq": 0 }, { "et": "04.02.2022 - 20:50:35", "cl": 35, "ucl": 9, "cal": 44, "tl": 84, "lcq": 79.5, "cb": 0, "tb": 0, "bcq": 0, "cm": 4, "fcm": 1, "tm": 6, "mcq": 66.6, "mfcq": 16.6 }, { "et": "05.02.2022 - 20:50:35", "cl": 35, "ucl": 9, "cal": 44, "tl": 84, "lcq": 79.5, "cb": 0, "tb": 0, "bcq": 0, "cm": 4, "fcm": 1, "tm": 6, "mcq": 66.6, "mfcq": 16.6 }, { "et": "06.02.2022 - 20:50:35", "cl": 35, "ucl": 9, "cal": 44, "tl": 84, "lcq": 79.5, "cb": 0, "tb": 0, "bcq": 0, "cm": 4, "fcm": 2, "tm": 6, "mcq": 66.6, "mfcq": 33.3 }, { "et": "07.02.2022 - 20:50:35", "cl": 35, "ucl": 9, "cal": 44, "tl": 84, "lcq": 79.5, "cb": 0, "tb": 0, "bcq": 0, "cm": 4, "fcm": 2, "tm": 6, "mcq": 66.6, "mfcq": 33.3 }, { "et": "08.02.2022 - 20:50:35", "cl": 35, "ucl": 9, "cal": 44, "tl": 84, "lcq": 79.5, "cb": 0, "tb": 0, "bcq": 0, "cm": 4, "fcm": 2, "tm": 6, "mcq": 66.6, "mfcq": 33.3 }, { "et": "09.02.2022 - 20:50:35", "cl": 35, "ucl": 9, "cal": 44, "tl": 84, "lcq": 79.5, "cb": 0, "tb": 0, "bcq": 0, "cm": 4, "fcm": 2, "tm": 6, "mcq": 66.6, "mfcq": 33.3 }, { "et": "21.02.2026 - 22:51:41", "cl": 15, "ucl": 0, "cal": 15, "tl": 84, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0, "cm": 3, "fcm": 3, "tm": 3, "mcq": 100, "mfcq": 100 }], "metrics": { "cc": 3,  "npth": 0,  "seq": 100,  "bcov": 100,  "crp": 3 } },
-      { "name": "Test.TestClass", "rp": "Sample_TestClass.html", "cl": 24, "ucl": 9, "cal": 33, "tl": 38, "cb": 2, "tb": 4, "cm": 4, "fcm": 3, "tm": 5, "lch": [72.7], "bch": [50], "mch": [80], "mfch": [60], "hc": [{ "et": "21.02.2026 - 22:51:41", "cl": 24, "ucl": 9, "cal": 33, "tl": 38, "lcq": 72.7, "cb": 2, "tb": 4, "bcq": 50, "cm": 4, "fcm": 3, "tm": 5, "mcq": 80, "mfcq": 60 }], "metrics": { "cc": 4,  "npth": 4,  "seq": 0,  "bcov": 50 } },
-      { "name": "Test.TestClass2", "rp": "Sample_TestClass2.html", "cl": 24, "ucl": 14, "cal": 38, "tl": 85, "cb": 1, "tb": 2, "cm": 6, "fcm": 4, "tm": 10, "lch": [39.4,39.4,42.1,44.7,39.4,63.1], "bch": [50,40,40,40,40,50], "mch": [60,40,40,60,60,60], "mfch": [40,40,40,40,40,40], "hc": [{ "et": "01.02.2022 - 20:50:35", "cl": 15, "ucl": 23, "cal": 38, "tl": 85, "lcq": 39.4, "cb": 10, "tb": 20, "bcq": 50, "cm": 6, "fcm": 4, "tm": 10, "mcq": 60, "mfcq": 40 }, { "et": "02.02.2022 - 20:50:35", "cl": 15, "ucl": 23, "cal": 38, "tl": 85, "lcq": 39.4, "cb": 8, "tb": 20, "bcq": 40, "cm": 4, "fcm": 4, "tm": 10, "mcq": 40, "mfcq": 40 }, { "et": "03.02.2022 - 20:50:35", "cl": 16, "ucl": 22, "cal": 38, "tl": 85, "lcq": 42.1, "cb": 8, "tb": 20, "bcq": 40, "cm": 4, "fcm": 4, "tm": 10, "mcq": 40, "mfcq": 40 }, { "et": "04.02.2022 - 20:50:35", "cl": 16, "ucl": 22, "cal": 38, "tl": 85, "lcq": 42.1, "cb": 8, "tb": 20, "bcq": 40, "cm": 4, "fcm": 4, "tm": 10, "mcq": 40, "mfcq": 40 }, { "et": "05.02.2022 - 20:50:35", "cl": 16, "ucl": 22, "cal": 38, "tl": 85, "lcq": 42.1, "cb": 8, "tb": 20, "bcq": 40, "cm": 4, "fcm": 4, "tm": 10, "mcq": 40, "mfcq": 40 }, { "et": "06.02.2022 - 20:50:35", "cl": 17, "ucl": 21, "cal": 38, "tl": 85, "lcq": 44.7, "cb": 8, "tb": 20, "bcq": 40, "cm": 6, "fcm": 4, "tm": 10, "mcq": 60, "mfcq": 40 }, { "et": "07.02.2022 - 20:50:35", "cl": 17, "ucl": 21, "cal": 38, "tl": 85, "lcq": 44.7, "cb": 8, "tb": 20, "bcq": 40, "cm": 6, "fcm": 4, "tm": 10, "mcq": 60, "mfcq": 40 }, { "et": "08.02.2022 - 20:50:35", "cl": 15, "ucl": 23, "cal": 38, "tl": 85, "lcq": 39.4, "cb": 8, "tb": 20, "bcq": 40, "cm": 6, "fcm": 4, "tm": 10, "mcq": 60, "mfcq": 40 }, { "et": "09.02.2022 - 20:50:35", "cl": 15, "ucl": 23, "cal": 38, "tl": 85, "lcq": 39.4, "cb": 8, "tb": 20, "bcq": 40, "cm": 6, "fcm": 4, "tm": 10, "mcq": 60, "mfcq": 40 }, { "et": "21.02.2026 - 22:51:41", "cl": 24, "ucl": 14, "cal": 38, "tl": 85, "lcq": 63.1, "cb": 1, "tb": 2, "bcq": 50, "cm": 6, "fcm": 4, "tm": 10, "mcq": 60, "mfcq": 40 }], "metrics": { "cc": 5,  "npth": 2,  "seq": 0,  "bcov": 0,  "crp": 5 } },
+      { "name": "Sample.PartialClass", "rp": "Sample_PartialClass.html", "cl": 12, "ucl": 10, "cal": 22, "tl": 53, "cb": 1, "tb": 2, "cm": 3, "fcm": 2, "tm": 6, "lch": [40.9,54.5,59,59,45.4,50,50,59,59,54.5], "bch": [50,40,40,45,45,45,45,45,45,50], "mch": [50,33.3,50,66.6,66.6,66.6,83.3,83.3,100,50], "mfch": [33.3,33.3,50,50,50,50,50,50,50,33.3], "hc": [{ "et": "01.02.2022 - 20:50:35", "cl": 9, "ucl": 13, "cal": 22, "tl": 53, "lcq": 40.9, "cb": 10, "tb": 20, "bcq": 50, "cm": 3, "fcm": 2, "tm": 6, "mcq": 50, "mfcq": 33.3 }, { "et": "02.02.2022 - 20:50:35", "cl": 12, "ucl": 10, "cal": 22, "tl": 53, "lcq": 54.5, "cb": 8, "tb": 20, "bcq": 40, "cm": 2, "fcm": 2, "tm": 6, "mcq": 33.3, "mfcq": 33.3 }, { "et": "03.02.2022 - 20:50:35", "cl": 13, "ucl": 9, "cal": 22, "tl": 53, "lcq": 59, "cb": 8, "tb": 20, "bcq": 40, "cm": 3, "fcm": 3, "tm": 6, "mcq": 50, "mfcq": 50 }, { "et": "04.02.2022 - 20:50:35", "cl": 13, "ucl": 9, "cal": 22, "tl": 53, "lcq": 59, "cb": 9, "tb": 20, "bcq": 45, "cm": 4, "fcm": 3, "tm": 6, "mcq": 66.6, "mfcq": 50 }, { "et": "05.02.2022 - 20:50:35", "cl": 10, "ucl": 12, "cal": 22, "tl": 53, "lcq": 45.4, "cb": 9, "tb": 20, "bcq": 45, "cm": 4, "fcm": 3, "tm": 6, "mcq": 66.6, "mfcq": 50 }, { "et": "06.02.2022 - 20:50:35", "cl": 11, "ucl": 11, "cal": 22, "tl": 53, "lcq": 50, "cb": 9, "tb": 20, "bcq": 45, "cm": 4, "fcm": 3, "tm": 6, "mcq": 66.6, "mfcq": 50 }, { "et": "07.02.2022 - 20:50:35", "cl": 11, "ucl": 11, "cal": 22, "tl": 53, "lcq": 50, "cb": 9, "tb": 20, "bcq": 45, "cm": 5, "fcm": 3, "tm": 6, "mcq": 83.3, "mfcq": 50 }, { "et": "08.02.2022 - 20:50:35", "cl": 13, "ucl": 9, "cal": 22, "tl": 53, "lcq": 59, "cb": 9, "tb": 20, "bcq": 45, "cm": 5, "fcm": 3, "tm": 6, "mcq": 83.3, "mfcq": 50 }, { "et": "09.02.2022 - 20:50:35", "cl": 13, "ucl": 9, "cal": 22, "tl": 53, "lcq": 59, "cb": 9, "tb": 20, "bcq": 45, "cm": 6, "fcm": 3, "tm": 6, "mcq": 100, "mfcq": 50 }, { "et": "24.02.2026 - 22:01:35", "cl": 12, "ucl": 10, "cal": 22, "tl": 53, "lcq": 54.5, "cb": 1, "tb": 2, "bcq": 50, "cm": 3, "fcm": 2, "tm": 6, "mcq": 50, "mfcq": 33.3 }], "metrics": { "cc": 1,  "npth": 0,  "seq": 0,  "bcov": 0,  "crp": 2 } },
+      { "name": "Test.Program", "rp": "Sample_Program.html", "cl": 15, "ucl": 0, "cal": 15, "tl": 84, "cb": 0, "tb": 0, "cm": 3, "fcm": 3, "tm": 3, "lch": [79.5,79.5,79.5,100], "bch": [], "mch": [66.6,66.6,66.6,100], "mfch": [0,16.6,33.3,100], "hc": [{ "et": "01.02.2022 - 20:50:35", "cl": 35, "ucl": 9, "cal": 44, "tl": 84, "lcq": 79.5, "cb": 0, "tb": 0, "bcq": 0, "cm": 4, "fcm": 0, "tm": 6, "mcq": 66.6, "mfcq": 0 }, { "et": "02.02.2022 - 20:50:35", "cl": 35, "ucl": 9, "cal": 44, "tl": 84, "lcq": 79.5, "cb": 0, "tb": 0, "bcq": 0, "cm": 4, "fcm": 0, "tm": 6, "mcq": 66.6, "mfcq": 0 }, { "et": "03.02.2022 - 20:50:35", "cl": 35, "ucl": 9, "cal": 44, "tl": 84, "lcq": 79.5, "cb": 0, "tb": 0, "bcq": 0, "cm": 4, "fcm": 0, "tm": 6, "mcq": 66.6, "mfcq": 0 }, { "et": "04.02.2022 - 20:50:35", "cl": 35, "ucl": 9, "cal": 44, "tl": 84, "lcq": 79.5, "cb": 0, "tb": 0, "bcq": 0, "cm": 4, "fcm": 1, "tm": 6, "mcq": 66.6, "mfcq": 16.6 }, { "et": "05.02.2022 - 20:50:35", "cl": 35, "ucl": 9, "cal": 44, "tl": 84, "lcq": 79.5, "cb": 0, "tb": 0, "bcq": 0, "cm": 4, "fcm": 1, "tm": 6, "mcq": 66.6, "mfcq": 16.6 }, { "et": "06.02.2022 - 20:50:35", "cl": 35, "ucl": 9, "cal": 44, "tl": 84, "lcq": 79.5, "cb": 0, "tb": 0, "bcq": 0, "cm": 4, "fcm": 2, "tm": 6, "mcq": 66.6, "mfcq": 33.3 }, { "et": "07.02.2022 - 20:50:35", "cl": 35, "ucl": 9, "cal": 44, "tl": 84, "lcq": 79.5, "cb": 0, "tb": 0, "bcq": 0, "cm": 4, "fcm": 2, "tm": 6, "mcq": 66.6, "mfcq": 33.3 }, { "et": "08.02.2022 - 20:50:35", "cl": 35, "ucl": 9, "cal": 44, "tl": 84, "lcq": 79.5, "cb": 0, "tb": 0, "bcq": 0, "cm": 4, "fcm": 2, "tm": 6, "mcq": 66.6, "mfcq": 33.3 }, { "et": "09.02.2022 - 20:50:35", "cl": 35, "ucl": 9, "cal": 44, "tl": 84, "lcq": 79.5, "cb": 0, "tb": 0, "bcq": 0, "cm": 4, "fcm": 2, "tm": 6, "mcq": 66.6, "mfcq": 33.3 }, { "et": "24.02.2026 - 22:01:35", "cl": 15, "ucl": 0, "cal": 15, "tl": 84, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0, "cm": 3, "fcm": 3, "tm": 3, "mcq": 100, "mfcq": 100 }], "metrics": { "cc": 3,  "npth": 0,  "seq": 100,  "bcov": 100,  "crp": 3 } },
+      { "name": "Test.TestClass", "rp": "Sample_TestClass.html", "cl": 24, "ucl": 9, "cal": 33, "tl": 38, "cb": 2, "tb": 4, "cm": 4, "fcm": 3, "tm": 5, "lch": [72.7], "bch": [50], "mch": [80], "mfch": [60], "hc": [{ "et": "24.02.2026 - 22:01:35", "cl": 24, "ucl": 9, "cal": 33, "tl": 38, "lcq": 72.7, "cb": 2, "tb": 4, "bcq": 50, "cm": 4, "fcm": 3, "tm": 5, "mcq": 80, "mfcq": 60 }], "metrics": { "cc": 4,  "npth": 4,  "seq": 0,  "bcov": 50 } },
+      { "name": "Test.TestClass2", "rp": "Sample_TestClass2.html", "cl": 24, "ucl": 14, "cal": 38, "tl": 85, "cb": 1, "tb": 2, "cm": 6, "fcm": 4, "tm": 10, "lch": [39.4,39.4,42.1,44.7,39.4,63.1], "bch": [50,40,40,40,40,50], "mch": [60,40,40,60,60,60], "mfch": [40,40,40,40,40,40], "hc": [{ "et": "01.02.2022 - 20:50:35", "cl": 15, "ucl": 23, "cal": 38, "tl": 85, "lcq": 39.4, "cb": 10, "tb": 20, "bcq": 50, "cm": 6, "fcm": 4, "tm": 10, "mcq": 60, "mfcq": 40 }, { "et": "02.02.2022 - 20:50:35", "cl": 15, "ucl": 23, "cal": 38, "tl": 85, "lcq": 39.4, "cb": 8, "tb": 20, "bcq": 40, "cm": 4, "fcm": 4, "tm": 10, "mcq": 40, "mfcq": 40 }, { "et": "03.02.2022 - 20:50:35", "cl": 16, "ucl": 22, "cal": 38, "tl": 85, "lcq": 42.1, "cb": 8, "tb": 20, "bcq": 40, "cm": 4, "fcm": 4, "tm": 10, "mcq": 40, "mfcq": 40 }, { "et": "04.02.2022 - 20:50:35", "cl": 16, "ucl": 22, "cal": 38, "tl": 85, "lcq": 42.1, "cb": 8, "tb": 20, "bcq": 40, "cm": 4, "fcm": 4, "tm": 10, "mcq": 40, "mfcq": 40 }, { "et": "05.02.2022 - 20:50:35", "cl": 16, "ucl": 22, "cal": 38, "tl": 85, "lcq": 42.1, "cb": 8, "tb": 20, "bcq": 40, "cm": 4, "fcm": 4, "tm": 10, "mcq": 40, "mfcq": 40 }, { "et": "06.02.2022 - 20:50:35", "cl": 17, "ucl": 21, "cal": 38, "tl": 85, "lcq": 44.7, "cb": 8, "tb": 20, "bcq": 40, "cm": 6, "fcm": 4, "tm": 10, "mcq": 60, "mfcq": 40 }, { "et": "07.02.2022 - 20:50:35", "cl": 17, "ucl": 21, "cal": 38, "tl": 85, "lcq": 44.7, "cb": 8, "tb": 20, "bcq": 40, "cm": 6, "fcm": 4, "tm": 10, "mcq": 60, "mfcq": 40 }, { "et": "08.02.2022 - 20:50:35", "cl": 15, "ucl": 23, "cal": 38, "tl": 85, "lcq": 39.4, "cb": 8, "tb": 20, "bcq": 40, "cm": 6, "fcm": 4, "tm": 10, "mcq": 60, "mfcq": 40 }, { "et": "09.02.2022 - 20:50:35", "cl": 15, "ucl": 23, "cal": 38, "tl": 85, "lcq": 39.4, "cb": 8, "tb": 20, "bcq": 40, "cm": 6, "fcm": 4, "tm": 10, "mcq": 60, "mfcq": 40 }, { "et": "24.02.2026 - 22:01:35", "cl": 24, "ucl": 14, "cal": 38, "tl": 85, "lcq": 63.1, "cb": 1, "tb": 2, "bcq": 50, "cm": 6, "fcm": 4, "tm": 10, "mcq": 60, "mfcq": 40 }], "metrics": { "cc": 5,  "npth": 2,  "seq": 0,  "bcov": 0,  "crp": 5 } },
     ]},
 ];
 

@@ -209,19 +209,13 @@ var renderDiffChart = function (chart) {
 
     var chartData = window[chart.getAttribute('data-data')];
     var options = {
-        reverseData: true,
-        horizontalBars: true,
         low: -chartData.minMaxValue,
         high: chartData.minMaxValue,
-        axisX: {
-            onlyInteger: true
-        },
         axisY: {
-            offset: 150
+            onlyInteger: true
         }
     };
     var barChart = new Chartist.Bar(chart, {
-        labels: chartData.labels,
         series: chartData.series
     }, options);
 
@@ -232,30 +226,48 @@ var renderDiffChart = function (chart) {
     chart.appendChild(tooltip);
 
     /* Tooltips */
+    /* Tooltips */
+    var showToolTip = function () {
+        var index = this.getAttribute('ct:meta');
+
+        tooltip.innerHTML = chartData.tooltips[index];
+        tooltip.style.display = 'block';
+    };
+
     var moveToolTip = function (event) {
         var box = chart.getBoundingClientRect();
         var left = event.pageX - box.left - window.pageXOffset;
+        var top = event.pageY - box.top - window.pageYOffset;
 
         left = left + 20;
+        top = top - tooltip.offsetHeight / 2;
+
         if (left + tooltip.offsetWidth > box.width) {
             left -= tooltip.offsetWidth + 40;
         }
 
-        tooltip.style.left = left + 'px';
+        if (top < 0) {
+            top = 0;
+        }
 
-        tooltip.style.display = 'block';
+        if (top + tooltip.offsetHeight > box.height) {
+            top = box.height - tooltip.offsetHeight;
+        }
+
+        tooltip.style.left = left + 'px';
+        tooltip.style.top = top + 'px';
     };
 
     var hideToolTip = function () {
         tooltip.style.display = 'none';
     };
     chart.addEventListener('mousemove', moveToolTip);
-    chart.addEventListener('mouseout', hideToolTip);
 
     barChart.on('created', function () {
         var chartBars = chart.getElementsByClassName('ct-bar');
         for (i = 0, l = chartBars.length; i < l; i++) {
-            chartBars[i].classList.add(chartBars[chartBars.length - 1 - i].getAttribute('ct:meta'));
+            chartBars[i].addEventListener('mousemove', showToolTip);
+            chartBars[i].addEventListener('mouseout', hideToolTip);
         }
     });
 };

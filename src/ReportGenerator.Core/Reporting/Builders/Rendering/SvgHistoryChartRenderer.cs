@@ -313,16 +313,25 @@ namespace Palmmedia.ReportGenerator.Core.Reporting.Builders.Rendering
         /// Renderes the given historic coverages as SVG image.
         /// </summary>
         /// <param name="minMaxValue">The minimum maximum of the chart.</param>
-        /// <param name="labels">The labels.</param>
-        /// <param name="diffValues">The corresponging values.</param>
-        /// <param name="cssIdentifiers">The corresponging CSS identifiers.</param>
+        /// <param name="coverageDiffValues">The coverage diff values.</param>
+        /// <param name="branchCoverageDiffValues">The branch coverage diff values.</param>
+        /// <param name="codeElementDiffValues">The method coverage diff values.</param>
+        /// <param name="fullCodeElementDiffValues">The full method coverage diff values.</param>
         /// <returns>The image in SVG format.</returns>
-        internal static string RenderHistoryDiffChart(int minMaxValue, List<string> labels, List<decimal> diffValues, List<string> cssIdentifiers)
+        internal static string RenderHistoryDiffChart(
+            int minMaxValue,
+            List<decimal?> coverageDiffValues,
+            List<decimal?> branchCoverageDiffValues,
+            List<decimal?> codeElementDiffValues,
+            List<decimal?> fullCodeElementDiffValues)
         {
-            decimal gridColumnWidth = (1200 - 160 - 10) / (decimal)(2 * minMaxValue);
-            int gridRowHeight = 25;
+            float gridWidth = 1190 - 50;
+            float gridColumWidth = gridWidth / coverageDiffValues.Count;
 
-            int height = (labels.Count * gridRowHeight) + 20;
+            int height = 100;
+            int gridRowHeight = height / 4;
+
+            float barOffset = 5 + ((gridColumWidth - 40 - 9) / 2);
 
             var sb = new StringBuilder($@"<svg xmlns=""http://www.w3.org/2000/svg"" xmlns:xlink=""http://www.w3.org/1999/xlink"" class=""ct-chart-bar ct-horizontal-bars"" width=""1200"" height=""{height}"" viewBox=""0 0 1200 {height}"">
 <style type=""text/css"">
@@ -345,10 +354,21 @@ namespace Palmmedia.ReportGenerator.Core.Reporting.Builders.Rendering
             stroke-width: 10px;
         }}
 
-        .ct-chart-bar .ct-series.ct-series-a .ct-bar.linecoverage {{ stroke: #c00; }}
-        .ct-chart-bar .ct-series.ct-series-a .ct-bar.branchcoverage {{ stroke: #1c2298; }}
-        .ct-chart-bar .ct-series.ct-series-a .ct-bar.codeelementcoverage {{ stroke: #0aad0a; }}
-        .ct-chart-bar .ct-series.ct-series-a .ct-bar.fullcodeelementcoverage {{ stroke: #FF6A00; }}
+        .ct-chart .ct-series.ct-series-a .ct-bar {{
+            stroke: #c00;
+        }}
+
+        .ct-chart .ct-series.ct-series-b .ct-bar {{
+            stroke: #1c2298;
+        }}
+
+        .ct-chart .ct-series.ct-series-c .ct-bar {{
+            stroke: #0aad0a;
+        }}
+
+        .ct-chart .ct-series.ct-series-d .ct-bar {{
+            stroke: #FF6A00;
+        }}
         ]]>
 </style>
 <title>Coverage delta</title>
@@ -357,65 +377,75 @@ namespace Palmmedia.ReportGenerator.Core.Reporting.Builders.Rendering
 
             sb.AppendLine(@"<g class=""ct-grids"">");
 
-            int counter = 1;
-            foreach (var label in labels)
+            for (int i = 0; i <= 4; i++)
             {
-                int y = 0 + (counter * gridRowHeight);
-                sb.AppendLine($@"<line x1=""160"" x2=""1190"" y1=""{y}"" y2=""{y}"" class=""ct-grid ct-vertical""></line>");
-                counter++;
+                int y = i * gridRowHeight;
+                sb.AppendLine($@"<line x1=""50"" x2=""1190"" y1=""{y}"" y2=""{y}"" class=""ct-grid""></line>");
             }
 
-            for (int i = 0; i <= 2 * minMaxValue; i++)
+            for (int i = 0; i <= coverageDiffValues.Count; i++)
             {
-                decimal x = 160 + (i * gridColumnWidth);
-                int y1 = 0;
-                int y2 = 0 + (labels.Count * gridRowHeight);
-
-                sb.AppendLine($@"<line x1=""{x.ToString("F3", CultureInfo.InvariantCulture)}"" x2=""{x.ToString("F3", CultureInfo.InvariantCulture)}"" y1=""{y1}"" y2=""{y2}"" class=""ct-grid ct-horizontal""></line>");
+                float x = 50 + (i * gridColumWidth);
+                sb.AppendLine($@"<line x1=""{x.ToString("F3", CultureInfo.InvariantCulture)}"" x2=""{x.ToString("F3", CultureInfo.InvariantCulture)}"" y1=""0"" y2=""100"" class=""ct-grid""></line>");
             }
 
             sb.AppendLine("</g>");
+
+
             sb.AppendLine("<g>");
-
-            counter = 0;
-            foreach (var label in labels)
-            {
-                int y = 15 + (counter * gridRowHeight);
-                sb.AppendLine($@"<text x=""140"" y=""{y}"" class=""ct-label"">{label}</text>");
-                counter++;
-            }
-
-            counter = 0;
-            for (int i = -minMaxValue; i <= minMaxValue; i++)
-            {
-                decimal x = 160 + 10 + (counter * gridColumnWidth);
-                int y = 14 + (labels.Count * gridRowHeight);
-
-                sb.AppendLine($@"<text x=""{x.ToString("F2", CultureInfo.InvariantCulture)}"" y=""{y}"" class=""ct-label"">{i}</text>");
-                counter++;
-            }
-
+            sb.AppendLine($@"<text x=""45"" y=""10"" class=""ct-label"">{minMaxValue}</text>");
+            sb.AppendLine($@"<text x=""45"" y=""100"" class=""ct-label"">-{minMaxValue}</text>");
             sb.AppendLine("</g>");
-            sb.AppendLine("<g>");
+
             sb.AppendLine(@"<g class=""ct-series ct-series-a"">");
 
-            counter = 0;
-            foreach (var label in labels)
+            for (int i = 0; i < coverageDiffValues.Count; i++)
             {
-                decimal value = diffValues[counter];
-                string cssIdentifier = cssIdentifiers[counter];
-
-                int y = 13 + (counter * gridRowHeight);
-                decimal x1 = 160 + (minMaxValue * gridColumnWidth);
-                decimal x2 = 160 + ((minMaxValue + value) * gridColumnWidth);
-
-                sb.AppendLine($@"<line y1=""{y}"" y2=""{y}"" x1=""{x1.ToString("F2", CultureInfo.InvariantCulture)}"" x2=""{x2.ToString("F2", CultureInfo.InvariantCulture)}"" class=""ct-bar {cssIdentifier}""></line>");
-
-                counter++;
+                float x = 50 + (i * gridColumWidth) + barOffset;
+                float y = 50 - (((float)coverageDiffValues[i].GetValueOrDefault() * height) / (2 * minMaxValue));
+                sb.AppendLine($@"<line x1=""{x.ToString("F3", CultureInfo.InvariantCulture)}"" x2=""{x.ToString("F3", CultureInfo.InvariantCulture)}"" y1=""50"" y2=""{y.ToString("F3", CultureInfo.InvariantCulture)}"" class=""ct-bar""></line>");
             }
 
             sb.AppendLine("</g>");
+
+            sb.AppendLine(@"<g class=""ct-series ct-series-b"">");
+
+            for (int i = 0; i < branchCoverageDiffValues.Count; i++)
+            {
+                float x = 50 + (i * gridColumWidth) + barOffset + 13;
+                float y = 50 - (((float)branchCoverageDiffValues[i].GetValueOrDefault() * height) / (2 * minMaxValue));
+                sb.AppendLine($@"<line x1=""{x.ToString("F3", CultureInfo.InvariantCulture)}"" x2=""{x.ToString("F3", CultureInfo.InvariantCulture)}"" y1=""50"" y2=""{y.ToString("F3", CultureInfo.InvariantCulture)}"" class=""ct-bar""></line>");
+            }
+
             sb.AppendLine("</g>");
+
+            if (codeElementDiffValues.Count > 0)
+            {
+                sb.AppendLine(@"<g class=""ct-series ct-series-c"">");
+
+                for (int i = 0; i < codeElementDiffValues.Count; i++)
+                {
+                    float x = 50 + (i * gridColumWidth) + barOffset + 26;
+                    float y = 50 - (((float)codeElementDiffValues[i].GetValueOrDefault() * height) / (2 * minMaxValue));
+                    sb.AppendLine($@"<line x1=""{x.ToString("F3", CultureInfo.InvariantCulture)}"" x2=""{x.ToString("F3", CultureInfo.InvariantCulture)}"" y1=""50"" y2=""{y.ToString("F3", CultureInfo.InvariantCulture)}"" class=""ct-bar""></line>");
+                }
+
+                sb.AppendLine("</g>");
+            }
+
+            if (fullCodeElementDiffValues.Count > 0)
+            {
+                sb.AppendLine(@"<g class=""ct-series ct-series-d"">");
+
+                for (int i = 0; i < fullCodeElementDiffValues.Count; i++)
+                {
+                    float x = 50 + (i * gridColumWidth) + barOffset + 39;
+                    float y = 50 - (((float)fullCodeElementDiffValues[i].GetValueOrDefault() * height) / (2 * minMaxValue));
+                    sb.AppendLine($@"<line x1=""{x.ToString("F3", CultureInfo.InvariantCulture)}"" x2=""{x.ToString("F3", CultureInfo.InvariantCulture)}"" y1=""50"" y2=""{y.ToString("F3", CultureInfo.InvariantCulture)}"" class=""ct-bar""></line>");
+                }
+
+                sb.AppendLine("</g>");
+            }
 
             sb.AppendLine("</svg>");
 
