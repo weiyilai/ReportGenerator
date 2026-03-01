@@ -2,7 +2,7 @@
   "profiles": {
     "ReportGenerator.Console.NetCore": {
       "commandName": "Project",
-      "commandLineArgs": "\"-reports:C:\\Users\\Daniel Palme\\Desktop\\coverage\\OpenCover.xml\" \"-targetdir:C:\\Users\\Daniel Palme\\Desktop\\coverage\" \"-historydir:C:\\Users\\Daniel Palme\\Desktop\\coverage\\history\" -reporttypes:Html; -tag:Hello settings:includeAllDatesInCharts=true"
+      "commandLineArgs": "\"-reports:..\\..\\..\\..\\..\\src\\Testprojects\\CSharp\\Reports\\Cobertura_coverlet.xml\" \"-targetdir:C:\\Users\\Daniel Palme\\Desktop\\coverage\" -reporttypes:Html; -filefilters:-*Abstract*.cs"
     }
   }
 }
