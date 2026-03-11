@@ -19,3 +19,4 @@ obj
 .netconfig
 node_modules
 /_ReSharper.Caches
+.idea
