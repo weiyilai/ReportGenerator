@@ -38,6 +38,7 @@ The following output formats are supported by ReportGenerator:
 -Markdown, MarkdownSummary, MarkdownAssembliesSummary, MarkdownSummaryGithub, MarkdownDeltaSummary
 -SvgChart
 -Badges
+-cjson
 -Custom formats (https://github.com/danielpalme/ReportGenerator/wiki/Custom-reports)
 
 Compatibility:
@@ -68,6 +69,10 @@ For further details take a look at LICENSE.txt.
 =======================================================================
 
 CHANGELOG
+
+5.5.4.0
+
+    * New: #777: Added new report type 'cjson' (contributed by @RemyBoyer)
 
 5.5.3.0
 

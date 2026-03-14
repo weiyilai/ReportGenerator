@@ -86,6 +86,7 @@ Explanations:
                        JsonSummary, CodeClimate, Latex, LatexSummary, lcov, MHtml, SvgChart, SonarQube, TeamCitySummary
                        TextSummary, TextDeltaSummary
                        Xml, XmlSummary
+                       cjson
    Source directories: Optional directories which contain the corresponding source code (separated by semicolon).
                        The source directories are used if coverage report contains classes without path information.
                        Globbing is not supported.
