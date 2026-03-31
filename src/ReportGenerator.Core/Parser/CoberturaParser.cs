@@ -214,7 +214,9 @@ namespace Palmmedia.ReportGenerator.Core.Parser
                 .Where(l => !lineNumbers.Contains(l.Attribute("number").Value))
                 .ToArray();
 
-            var linesOfFile = lines.Concat(additionalLinesInMethodElement)
+            lines = lines.Concat(additionalLinesInMethodElement).ToArray();
+
+            var linesOfFile = lines
                 .Select(line => new
                 {
                     LineNumber = int.Parse(line.Attribute("number").Value, CultureInfo.InvariantCulture),

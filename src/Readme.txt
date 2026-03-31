@@ -70,6 +70,10 @@ For further details take a look at LICENSE.txt.
 
 CHANGELOG
 
+5.5.5.0
+
+    * New: #780: Improved branch handling for Coberatura files (contributed by @lorenz-ammersbach)
+
 5.5.4.0
 
     * New: #777: Added new report type 'cjson' (contributed by @RemyBoyer)
