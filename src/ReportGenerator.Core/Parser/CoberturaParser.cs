@@ -223,7 +223,7 @@ namespace Palmmedia.ReportGenerator.Core.Parser
                 .OrderBy(seqpnt => seqpnt.LineNumber)
                 .ToArray();
 
-            var branches = GetBranches(lines);
+            var branches = GetBranches(linesOfFile);
 
             int[] coverage = new int[] { };
             LineVisitStatus[] lineVisitStatus = new LineVisitStatus[] { };
