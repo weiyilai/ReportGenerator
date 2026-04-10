@@ -1,20 +1,19 @@
-import { CoverageInfoSettings } from "../data/coverageinfo-settings.class";
 import { Helper } from "./helper.class";
 
 export abstract class ElementBase {
     name: string = "";
 
-    coveredLines: number = 0;
-    uncoveredLines: number = 0;
-    coverableLines: number = 0;
-    totalLines: number = 0;
+    abstract get coveredLines(): number;
+    abstract get uncoveredLines(): number;
+    abstract get coverableLines(): number;
+    abstract get totalLines(): number;
 
-    coveredBranches: number = 0;
-    totalBranches: number = 0;
+    abstract get coveredBranches(): number;
+    abstract get totalBranches(): number;
 
-    coveredMethods: number = 0;
-    fullyCoveredMethods: number = 0;
-    totalMethods: number = 0;
+    abstract get coveredMethods(): number;
+    abstract get fullyCoveredMethods(): number;
+    abstract get totalMethods(): number;
 
     get coverage(): number {
         if (this.coverableLines === 0) {
@@ -112,7 +111,7 @@ export abstract class ElementBase {
         return this.fullyCoveredMethods + "/" + this.totalMethods;
     }
 
-    abstract visible(settings: CoverageInfoSettings): boolean;
+    abstract visible(): boolean;
 
     abstract updateCurrentHistoricCoverage(historyComparisionDate: string): void;
 }

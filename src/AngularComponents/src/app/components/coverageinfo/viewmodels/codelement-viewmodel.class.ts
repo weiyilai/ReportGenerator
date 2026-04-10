@@ -1,4 +1,4 @@
-import { CoverageInfoSettings } from "../data/coverageinfo-settings.class";
+import { SettingsService } from "src/app/infrastructure/settings.service";
 import { ClassViewModel } from "./class-viewmodel.class";
 import { ElementBase } from "./elementbase.class";
 import { Helper } from "./helper.class";
@@ -10,6 +10,205 @@ export class CodeElementViewModel extends ElementBase {
 
     collapsed: boolean = false;
 
+    get coveredLines(): number {
+        let result: number = 0;
+
+        for (let i: number = 0; i < this.subElements.length; i++) {
+            if (!this.subElements[i].visible()) {
+                continue;
+            }
+
+            result += this.subElements[i].coveredLines;
+        }
+
+        for (let i: number = 0; i < this.classes.length; i++) {
+            if (!this.classes[i].visible()) {
+                continue;
+            }
+
+            result += this.classes[i].coveredLines;
+        }
+
+        return result;
+    }
+
+    get uncoveredLines(): number {
+        let result: number = 0;
+
+        for (let i: number = 0; i < this.subElements.length; i++) {
+            if (!this.subElements[i].visible()) {
+                continue;
+            }
+
+            result += this.subElements[i].uncoveredLines;
+        }
+
+        for (let i: number = 0; i < this.classes.length; i++) {
+            if (!this.classes[i].visible()) {
+                continue;
+            }
+
+            result += this.classes[i].uncoveredLines;
+        }
+
+        return result;
+
+    }
+
+    get coverableLines(): number {
+        let result: number = 0;
+
+        for (let i: number = 0; i < this.subElements.length; i++) {
+            if (!this.subElements[i].visible()) {
+                continue;
+            }
+
+            result += this.subElements[i].coverableLines;
+        }
+
+        for (let i: number = 0; i < this.classes.length; i++) {
+            if (!this.classes[i].visible()) {
+                continue;
+            }
+            
+            result += this.classes[i].coverableLines;
+        }
+
+        return result;
+    }
+
+    get totalLines(): number {
+        let result: number = 0;
+
+        for (let i: number = 0; i < this.subElements.length; i++) {
+            if (!this.subElements[i].visible()) {
+                continue;
+            }
+
+            result += this.subElements[i].totalLines;
+        }
+
+        for (let i: number = 0; i < this.classes.length; i++) {
+            if (!this.classes[i].visible()) {
+                continue;
+            }
+            
+            result += this.classes[i].totalLines;
+        }
+
+        return result;
+    }
+
+    get coveredBranches(): number {
+        let result: number = 0;
+
+        for (let i: number = 0; i < this.subElements.length; i++) {
+            if (!this.subElements[i].visible()) {
+                continue;
+            }
+
+            result += this.subElements[i].coveredBranches;
+        }
+
+        for (let i: number = 0; i < this.classes.length; i++) {
+            if (!this.classes[i].visible()) {
+                continue;
+            }
+            
+            result += this.classes[i].coveredBranches;
+        }
+
+        return result;
+    }
+
+    get totalBranches(): number {
+        let result: number = 0;
+
+        for (let i: number = 0; i < this.subElements.length; i++) {
+            if (!this.subElements[i].visible()) {
+                continue;
+            }
+
+            result += this.subElements[i].totalBranches;
+        }
+
+        for (let i: number = 0; i < this.classes.length; i++) {
+            if (!this.classes[i].visible()) {
+                continue;
+            }
+            
+            result += this.classes[i].totalBranches;
+        }
+
+        return result;
+    }
+
+    get coveredMethods(): number {
+        let result: number = 0;
+
+        for (let i: number = 0; i < this.subElements.length; i++) {
+            if (!this.subElements[i].visible()) {
+                continue;
+            }
+
+            result += this.subElements[i].coveredMethods;
+        }
+
+        for (let i: number = 0; i < this.classes.length; i++) {
+            if (!this.classes[i].visible()) {
+                continue;
+            }
+            
+            result += this.classes[i].coveredMethods;
+        }
+
+        return result;
+    }
+
+    get fullyCoveredMethods(): number {
+        let result: number = 0;
+
+        for (let i: number = 0; i < this.subElements.length; i++) {
+            if (!this.subElements[i].visible()) {
+                continue;
+            }
+
+            result += this.subElements[i].fullyCoveredMethods;
+        }
+
+        for (let i: number = 0; i < this.classes.length; i++) {
+            if (!this.classes[i].visible()) {
+                continue;
+            }
+            
+            result += this.classes[i].fullyCoveredMethods;
+        }
+
+        return result;
+    }
+
+    get totalMethods(): number {
+        let result: number = 0;
+
+        for (let i: number = 0; i < this.subElements.length; i++) {
+            if (!this.subElements[i].visible()) {
+                continue;
+            }
+
+            result += this.subElements[i].totalMethods;
+        }
+
+        for (let i: number = 0; i < this.classes.length; i++) {
+            if (!this.classes[i].visible()) {
+                continue;
+            }
+            
+            result += this.classes[i].totalMethods;
+        }
+
+        return result;
+    }
+
     constructor(
         name: string,
         parent: CodeElementViewModel|null) {
@@ -18,19 +217,20 @@ export class CodeElementViewModel extends ElementBase {
             this.collapsed = name.indexOf("Test") > -1 && parent === null;
     }
 
-    visible(settings: CoverageInfoSettings): boolean {
-        if (settings.filter !== "" && this.name.toLowerCase().indexOf(settings.filter.toLowerCase()) > -1) {
+    visible(): boolean {
+        if (SettingsService.instance.settings().filter !== "" 
+            && this.name.toLowerCase().indexOf(SettingsService.instance.settings().filter.toLowerCase()) > -1) {
             return true;
         }
 
         for (let i: number = 0; i < this.subElements.length; i++) {
-            if (this.subElements[i].visible(settings)) {
+            if (this.subElements[i].visible()) {
                 return true;
             }
         }
 
         for (let i: number = 0; i < this.classes.length; i++) {
-            if (this.classes[i].visible(settings)) {
+            if (this.classes[i].visible()) {
                 return true;
             }
         }
@@ -39,18 +239,6 @@ export class CodeElementViewModel extends ElementBase {
     }
 
     insertClass(clazz: ClassViewModel, grouping: number|null): void {
-        this.coveredLines += clazz.coveredLines;
-        this.uncoveredLines += clazz.uncoveredLines;
-        this.coverableLines += clazz.coverableLines;
-        this.totalLines += clazz.totalLines;
-
-        this.coveredBranches += clazz.coveredBranches;
-        this.totalBranches += clazz.totalBranches;
-
-        this.coveredMethods += clazz.coveredMethods;
-        this.fullyCoveredMethods += clazz.fullyCoveredMethods;
-        this.totalMethods += clazz.totalMethods;
-
         if (grouping === null) {
             this.classes.push(clazz);
             return;

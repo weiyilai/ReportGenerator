@@ -10,6 +10,7 @@ import { CoverageInfoComponent } from "./components/coverageinfo/coverage-info.c
 import { PopupComponent } from "./components/coverageinfo/popup.component";
 import { ProButton } from "./components/coverageinfo/pro-button.component";
 import { RiskHotspotsComponent } from "./components/riskhotspots/riskhotspots.component";
+import { SettingsService } from "./infrastructure/settings.service";
 import { WindowRefService } from "./infrastructure/windowref.service";
 
 @NgModule({
@@ -28,7 +29,7 @@ import { WindowRefService } from "./infrastructure/windowref.service";
     FormsModule,
     NgxSliderModule
   ],
-  providers: [WindowRefService],
+  providers: [SettingsService, WindowRefService],
   bootstrap: [RiskHotspotsComponent, CoverageInfoComponent]
 })
 export class AppModule { }

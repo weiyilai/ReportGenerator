@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
+import { CoverageInfoSettings } from "./data/coverageinfo-settings.class";
 import { Metric } from "./data/metric.class";
 import { ClassViewModel } from "./viewmodels/class-viewmodel.class";
 
@@ -241,6 +242,8 @@ import { ClassViewModel } from "./viewmodels/class-viewmodel.class";
     standalone: false
 })
 export class ClassRow {
+    @Input() settings!: CoverageInfoSettings;
+    
     @Input() clazz!: ClassViewModel;
 
     @Input() translations: any = { };

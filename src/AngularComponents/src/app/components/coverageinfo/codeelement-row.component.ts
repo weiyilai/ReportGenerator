@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
+import { CoverageInfoSettings } from "./data/coverageinfo-settings.class";
 import { Metric } from "./data/metric.class";
 import { CodeElementViewModel } from "./viewmodels/codelement-viewmodel.class";
 
@@ -76,6 +77,8 @@ import { CodeElementViewModel } from "./viewmodels/codelement-viewmodel.class";
     standalone: false
 })
 export class CodeElementRow {
+    @Input() settings!: CoverageInfoSettings;
+
     @Input() element!: CodeElementViewModel;
 
     @Input() collapsed: boolean = false;

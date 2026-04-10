@@ -1,5 +1,5 @@
+import { SettingsService } from "src/app/infrastructure/settings.service";
 import { Class } from "../data/class.class";
-import { CoverageInfoSettings } from "../data/coverageinfo-settings.class";
 import { HistoricCoverage } from "../data/historic-coverage.class";
 import { ElementBase } from "./elementbase.class";
 import { Helper } from "./helper.class";
@@ -14,6 +14,81 @@ export class ClassViewModel extends ElementBase {
     metrics: any;
 
     currentHistoricCoverage: HistoricCoverage|null = null;
+
+    _coveredLines: number = 0;
+    _uncoveredLines: number = 0;
+    _coverableLines: number = 0;
+    _totalLines: number = 0;
+
+    _coveredBranches: number = 0;
+    _totalBranches: number = 0;
+
+    _coveredMethods: number = 0;
+    _fullyCoveredMethods: number = 0;
+    _totalMethods: number = 0;
+
+    get coveredLines(): number {
+        return this._coveredLines;
+    }
+    set coveredLines(value: number) {
+        this._coveredLines = value;
+    }
+
+    get uncoveredLines(): number {
+        return this._uncoveredLines;
+    }
+    set uncoveredLines(value: number) {
+        this._uncoveredLines = value;
+    }
+
+    get coverableLines(): number {
+        return this._coverableLines;
+    }
+    set coverableLines(value: number) {
+        this._coverableLines = value;
+    }
+
+    get totalLines(): number {
+        return this._totalLines;
+    }
+    set totalLines(value: number) {
+        this._totalLines = value;
+    }
+
+    get coveredBranches(): number {
+        return this._coveredBranches;
+    }
+    set coveredBranches(value: number) {
+        this._coveredBranches = value;
+    }
+
+    get totalBranches(): number {
+        return this._totalBranches;
+    }
+    set totalBranches(value: number) {
+        this._totalBranches = value;
+    }
+
+    get coveredMethods(): number {
+        return this._coveredMethods;
+    }
+    set coveredMethods(value: number) {
+        this._coveredMethods = value;
+    }
+
+    get fullyCoveredMethods(): number {
+        return this._fullyCoveredMethods;
+    }
+    set fullyCoveredMethods(value: number) {
+        this._fullyCoveredMethods = value;
+    }
+
+    get totalMethods(): number {
+        return this._totalMethods;
+    }
+    set totalMethods(value: number) {
+        this._totalMethods = value;
+    }
 
     constructor(
         clazz: Class,
@@ -54,8 +129,8 @@ export class ClassViewModel extends ElementBase {
         return Helper.roundNumber(100 * this.coveredLines / this.coverableLines);
     }
 
-    visible(settings: CoverageInfoSettings): boolean {
-        if (settings.filter !== "" && this.name.toLowerCase().indexOf(settings.filter.toLowerCase()) === -1) {
+    visible(): boolean {
+        if (SettingsService.instance.settings().filter !== "" && this.name.toLowerCase().indexOf(SettingsService.instance.settings().filter.toLowerCase()) === -1) {
             return false;
         }
 
@@ -64,7 +139,7 @@ export class ClassViewModel extends ElementBase {
         coverageMin = Number.isNaN(coverageMin) ? 0 : coverageMin;
         coverageMax = Number.isNaN(coverageMax) ? 100 : coverageMax;
 
-        if (settings.lineCoverageMin > coverageMin || settings.lineCoverageMax < coverageMax) {
+        if (SettingsService.instance.settings().lineCoverageMin > coverageMin || SettingsService.instance.settings().lineCoverageMax < coverageMax) {
             return false;
         }
 
@@ -73,7 +148,7 @@ export class ClassViewModel extends ElementBase {
         branchCoverageMin = Number.isNaN(branchCoverageMin) ? 0 : branchCoverageMin;
         branchCoverageMax = Number.isNaN(branchCoverageMax) ? 100 : branchCoverageMax;
         
-        if (settings.branchCoverageMin > branchCoverageMin || settings.branchCoverageMax < branchCoverageMax) {
+        if (SettingsService.instance.settings().branchCoverageMin > branchCoverageMin || SettingsService.instance.settings().branchCoverageMax < branchCoverageMax) {
             return false;
         }
         
@@ -82,7 +157,7 @@ export class ClassViewModel extends ElementBase {
         methodCoverageMin = Number.isNaN(methodCoverageMin) ? 0 : methodCoverageMin;
         methodCoverageMax = Number.isNaN(methodCoverageMax) ? 100 : methodCoverageMax;
 
-        if (settings.methodCoverageMin > methodCoverageMin || settings.methodCoverageMax < methodCoverageMax) {
+        if (SettingsService.instance.settings().methodCoverageMin > methodCoverageMin || SettingsService.instance.settings().methodCoverageMax < methodCoverageMax) {
             return false;
         }
 
@@ -91,15 +166,15 @@ export class ClassViewModel extends ElementBase {
         methodFullCoverageMin = Number.isNaN(methodFullCoverageMin) ? 0 : methodFullCoverageMin;
         methodFullCoverageMax = Number.isNaN(methodFullCoverageMax) ? 100 : methodFullCoverageMax;
 
-        if (settings.methodFullCoverageMin > methodFullCoverageMin || settings.methodFullCoverageMax < methodFullCoverageMax) {
+        if (SettingsService.instance.settings().methodFullCoverageMin > methodFullCoverageMin || SettingsService.instance.settings().methodFullCoverageMax < methodFullCoverageMax) {
             return false;
         }
 
-        if (settings.historyComparisionType === "" || this.currentHistoricCoverage === null) {
+        if (SettingsService.instance.settings().historyComparisionType === "" || this.currentHistoricCoverage === null) {
             return true;
         }
 
-        if (settings.historyComparisionType === "allChanges") {
+        if (SettingsService.instance.settings().historyComparisionType === "allChanges") {
             if (this.coveredLines === this.currentHistoricCoverage.cl
                 && this.uncoveredLines === this.currentHistoricCoverage.ucl
                 && this.coverableLines === this.currentHistoricCoverage.cal
@@ -111,42 +186,42 @@ export class ClassViewModel extends ElementBase {
                 && this.totalMethods === this.currentHistoricCoverage.tm) {
                 return false;
             }
-        } else if (settings.historyComparisionType === "lineCoverageIncreaseOnly") {
+        } else if (SettingsService.instance.settings().historyComparisionType === "lineCoverageIncreaseOnly") {
             let coverage: number = this.coverage;
             if (isNaN(coverage) || coverage <= this.currentHistoricCoverage.lcq) {
                 return false;
             }
-        } else if (settings.historyComparisionType === "lineCoverageDecreaseOnly") {
+        } else if (SettingsService.instance.settings().historyComparisionType === "lineCoverageDecreaseOnly") {
             let coverage: number = this.coverage;
             if (isNaN(coverage) || coverage >= this.currentHistoricCoverage.lcq) {
                 return false;
             }
-        } else if (settings.historyComparisionType === "branchCoverageIncreaseOnly") {
+        } else if (SettingsService.instance.settings().historyComparisionType === "branchCoverageIncreaseOnly") {
             let branchCoverage: number = this.branchCoverage;
             if (isNaN(branchCoverage) || branchCoverage <= this.currentHistoricCoverage.bcq) {
                 return false;
             }
-        } else if (settings.historyComparisionType === "branchCoverageDecreaseOnly") {
+        } else if (SettingsService.instance.settings().historyComparisionType === "branchCoverageDecreaseOnly") {
             let branchCoverage: number = this.branchCoverage;
             if (isNaN(branchCoverage) || branchCoverage >= this.currentHistoricCoverage.bcq) {
                 return false;
             }
-        } else if (settings.historyComparisionType === "methodCoverageIncreaseOnly") {
+        } else if (SettingsService.instance.settings().historyComparisionType === "methodCoverageIncreaseOnly") {
             let methodCoverage: number = this.methodCoverage;
             if (isNaN(methodCoverage) || methodCoverage <= this.currentHistoricCoverage.mcq) {
                 return false;
             }
-        } else if (settings.historyComparisionType === "methodCoverageDecreaseOnly") {
+        } else if (SettingsService.instance.settings().historyComparisionType === "methodCoverageDecreaseOnly") {
             let methodCoverage: number = this.methodCoverage;
             if (isNaN(methodCoverage) || methodCoverage >= this.currentHistoricCoverage.mcq) {
                 return false;
             }
-        } else if (settings.historyComparisionType === "fullMethodCoverageIncreaseOnly") {
+        } else if (SettingsService.instance.settings().historyComparisionType === "fullMethodCoverageIncreaseOnly") {
             let methodFullCoverage: number = this.methodFullCoverage;
             if (isNaN(methodFullCoverage) || methodFullCoverage <= this.currentHistoricCoverage.mfcq) {
                 return false;
             }
-        } else if (settings.historyComparisionType === "fullMethodCoverageDecreaseOnly") {
+        } else if (SettingsService.instance.settings().historyComparisionType === "fullMethodCoverageDecreaseOnly") {
             let methodFullCoverage: number = this.methodFullCoverage;
             if (isNaN(methodFullCoverage) || methodFullCoverage >= this.currentHistoricCoverage.mfcq) {
                 return false;
