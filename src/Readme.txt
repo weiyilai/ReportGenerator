@@ -73,6 +73,7 @@ CHANGELOG
 5.5.5.0
 
     * New: #780: Improved branch handling for Coberatura files (contributed by @lorenz-ammersbach)
+    * New: #782: Dynamic metric rows (assemblies/modules) in HTML report
 
 5.5.4.0
 
