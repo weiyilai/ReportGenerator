@@ -74,6 +74,7 @@ CHANGELOG
 
     * New: #780: Improved branch handling for Coberatura files (contributed by @lorenz-ammersbach)
     * New: #782: Dynamic metric rows (assemblies/modules) in HTML report
+    * New: Github Action: Added input validation and path scope enforcement (contributed by @ismits)
 
 5.5.4.0
 
