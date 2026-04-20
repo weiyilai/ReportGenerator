@@ -70,6 +70,10 @@ For further details take a look at LICENSE.txt.
 
 CHANGELOG
 
+5.5.6.0
+
+    * Fix: Github Action: Allow runner.temp directory
+
 5.5.5.0
 
     * New: #780: Improved branch handling for Coberatura files (contributed by @lorenz-ammersbach)
