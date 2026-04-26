@@ -6,7 +6,7 @@ env:
   solution: 'src\ReportGenerator.slnx'
   buildPlatform: Any CPU
   buildConfiguration: Release
-  version: 5.5.6
+  version: 5.5.7
   dotnetSDKVersion: 10.0.202
   nodeVersion: 24
 
