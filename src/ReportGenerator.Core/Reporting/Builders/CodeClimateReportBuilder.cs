@@ -151,7 +151,7 @@ namespace Palmmedia.ReportGenerator.Core.Reporting.Builders
 
                             var lineCoverage = file.LineCoverage;
 
-                            for (int i = 0; i < lineCoverage.Count; i++)
+                            for (long i = 0; i < lineCoverage.LongLength; i++)
                             {
                                 if (i > 0)
                                 {

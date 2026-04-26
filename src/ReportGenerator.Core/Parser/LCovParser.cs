@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using Palmmedia.ReportGenerator.Core.Common;
 using Palmmedia.ReportGenerator.Core.Parser.Analysis;
+using Palmmedia.ReportGenerator.Core.Parser.Analysis.LineCoverage;
 using Palmmedia.ReportGenerator.Core.Parser.Filtering;
 
 namespace Palmmedia.ReportGenerator.Core.Parser
@@ -209,13 +210,8 @@ namespace Palmmedia.ReportGenerator.Core.Parser
                 }
             }
 
-            int[] coverage = new int[maxiumLineNumber + 1];
-            LineVisitStatus[] lineVisitStatus = new LineVisitStatus[maxiumLineNumber + 1];
-
-            for (int i = 0; i < coverage.Length; i++)
-            {
-                coverage[i] = -1;
-            }
+            var coverage = LineInfoFactory.Create<int>(maxiumLineNumber + 1, -1);
+            var lineVisitStatus = LineInfoFactory.Create<LineVisitStatus>(maxiumLineNumber + 1, LineVisitStatus.NotCoverable);
 
             foreach (var kv in visitsByLine)
             {

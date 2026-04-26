@@ -106,7 +106,7 @@ namespace Palmmedia.ReportGenerator.Core.Reporting.Builders
 
                             foreach (var codeElement in file.CodeElements)
                             {
-                                if (file.LineCoverage.Count > codeElement.FirstLine)
+                                if (file.LineCoverage.Length > codeElement.FirstLine)
                                 {
                                     // FNDA:<execution count>,<function name>
                                     int coverage = file.LineCoverage[codeElement.FirstLine];
@@ -146,7 +146,7 @@ namespace Palmmedia.ReportGenerator.Core.Reporting.Builders
                             int coveredLines = 0;
                             int instrumentedLines = 0;
 
-                            for (int i = 1; i < file.LineCoverage.Count; i++)
+                            for (long i = 1; i < file.LineCoverage.LongLength; i++)
                             {
                                 int coverage = file.LineCoverage[i];
 

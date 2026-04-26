@@ -214,7 +214,11 @@ namespace Palmmedia.ReportGenerator.Core.Parser.FileReading
         {
             using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                if (fs.Length == 0) return false;
+                if (fs.Length == 0)
+                {
+                    return false;
+                }
+
                 fs.Seek(-1, SeekOrigin.End);
                 int lastByte = fs.ReadByte();
                 return lastByte == '\n' || lastByte == '\r';

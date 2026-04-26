@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using Palmmedia.ReportGenerator.Core.Common;
 using Palmmedia.ReportGenerator.Core.Logging;
+using Palmmedia.ReportGenerator.Core.Parser.Analysis.LineCoverage;
 using Palmmedia.ReportGenerator.Core.Parser.FileReading;
 
 namespace Palmmedia.ReportGenerator.Core.Parser.Analysis
@@ -39,12 +39,12 @@ namespace Palmmedia.ReportGenerator.Core.Parser.Analysis
         /// 0: Not visited
         /// >0: Number of visits
         /// </summary>
-        private int[] lineCoverage;
+        private ILineInfo<int> lineCoverage;
 
         /// <summary>
         /// Array containing the line visit status by line number.
         /// </summary>
-        private LineVisitStatus[] lineVisitStatus;
+        private ILineInfo<LineVisitStatus> lineVisitStatus;
 
         /// <summary>
         /// The branches by line number.
@@ -77,7 +77,7 @@ namespace Palmmedia.ReportGenerator.Core.Parser.Analysis
         /// <param name="path">The path of the file.</param>
         /// <param name="lineCoverage">The line coverage.</param>
         /// <param name="lineVisitStatus">The line visit status.</param>
-        internal CodeFile(string path, int[] lineCoverage, LineVisitStatus[] lineVisitStatus)
+        internal CodeFile(string path, ILineInfo<int> lineCoverage, ILineInfo<LineVisitStatus> lineVisitStatus)
             : this(path, lineCoverage, lineVisitStatus, null, null)
         {
         }
@@ -89,7 +89,7 @@ namespace Palmmedia.ReportGenerator.Core.Parser.Analysis
         /// <param name="lineCoverage">The line coverage.</param>
         /// <param name="lineVisitStatus">The line visit status.</param>
         /// <param name="additionalFileReader">The optional additional file reader.</param>
-        internal CodeFile(string path, int[] lineCoverage, LineVisitStatus[] lineVisitStatus, IFileReader additionalFileReader)
+        internal CodeFile(string path, ILineInfo<int> lineCoverage, ILineInfo<LineVisitStatus> lineVisitStatus, IFileReader additionalFileReader)
             : this(path, lineCoverage, lineVisitStatus, null, additionalFileReader)
         {
         }
@@ -101,7 +101,7 @@ namespace Palmmedia.ReportGenerator.Core.Parser.Analysis
         /// <param name="lineCoverage">The line coverage.</param>
         /// <param name="lineVisitStatus">The line visit status.</param>
         /// <param name="branches">The branches.</param>
-        internal CodeFile(string path, int[] lineCoverage, LineVisitStatus[] lineVisitStatus, IDictionary<int, ICollection<Branch>> branches)
+        internal CodeFile(string path, ILineInfo<int> lineCoverage, ILineInfo<LineVisitStatus> lineVisitStatus, IDictionary<int, ICollection<Branch>> branches)
             : this(path, lineCoverage, lineVisitStatus, branches, null)
         {
         }
@@ -116,8 +116,8 @@ namespace Palmmedia.ReportGenerator.Core.Parser.Analysis
         /// <param name="additionalFileReader">The optional additional file reader.</param>
         internal CodeFile(
             string path,
-            int[] lineCoverage,
-            LineVisitStatus[] lineVisitStatus,
+            ILineInfo<int> lineCoverage,
+            ILineInfo<LineVisitStatus> lineVisitStatus,
             IDictionary<int, ICollection<Branch>> branches,
             IFileReader additionalFileReader)
         {
@@ -195,12 +195,12 @@ namespace Palmmedia.ReportGenerator.Core.Parser.Analysis
         /// <summary>
         /// Gets line coverage information by line number for this file.
         /// </summary>
-        public ReadOnlyCollection<int> LineCoverage => Array.AsReadOnly(this.lineCoverage);
+        public IReadOnlyLineInfo<int> LineCoverage => this.lineCoverage;
 
         /// <summary>
         /// Gets line visit status by line number for this file.
         /// </summary>
-        public ReadOnlyCollection<LineVisitStatus> LineVisitStatus => Array.AsReadOnly(this.lineVisitStatus);
+        public IReadOnlyLineInfo<LineVisitStatus> LineVisitStatus => this.lineVisitStatus;
 
         /// <summary>
         /// Gets the branches by line number.
@@ -405,8 +405,7 @@ namespace Palmmedia.ReportGenerator.Core.Parser.Analysis
                 throw new ArgumentNullException(nameof(trackedMethodCoverage));
             }
 
-            CoverageByTrackedMethod existingTrackedMethodCoverage;
-            if (!this.lineCoveragesByTestMethod.TryGetValue(testMethod, out existingTrackedMethodCoverage))
+            if (!this.lineCoveragesByTestMethod.TryGetValue(testMethod, out CoverageByTrackedMethod existingTrackedMethodCoverage))
             {
                 this.lineCoveragesByTestMethod.Add(testMethod, trackedMethodCoverage);
             }
@@ -502,8 +501,7 @@ namespace Palmmedia.ReportGenerator.Core.Parser.Analysis
                         }
                     });
 
-                CtcDetails ctcDetailsOfLine = null;
-                this.ctcDetails.TryGetValue(currentLineNumber, out ctcDetailsOfLine);
+                this.ctcDetails.TryGetValue(currentLineNumber, out CtcDetails ctcDetailsOfLine);
 
                 if (this.branches != null && this.branches.TryGetValue(currentLineNumber, out branchesOfLine))
                 {
@@ -553,24 +551,13 @@ namespace Palmmedia.ReportGenerator.Core.Parser.Analysis
             // Resize coverage array if necessary
             if (file.lineCoverage.LongLength > this.lineCoverage.LongLength)
             {
-                int[] newLineCoverage = new int[file.lineCoverage.LongLength];
-
-                Array.Copy(this.lineCoverage, newLineCoverage, this.lineCoverage.LongLength);
-
-                for (long i = this.lineCoverage.LongLength; i < file.lineCoverage.LongLength; i++)
-                {
-                    newLineCoverage[i] = -1;
-                }
-
-                this.lineCoverage = newLineCoverage;
+                this.lineCoverage = this.lineCoverage.Resize(file.lineCoverage.LongLength);
             }
 
             // Resize line visit status array if necessary
             if (file.lineVisitStatus.LongLength > this.lineVisitStatus.LongLength)
             {
-                LineVisitStatus[] newLineVisitStatus = new LineVisitStatus[file.lineVisitStatus.LongLength];
-                Array.Copy(this.lineVisitStatus, newLineVisitStatus, this.lineVisitStatus.LongLength);
-                this.lineVisitStatus = newLineVisitStatus;
+                this.lineVisitStatus = this.lineVisitStatus.Resize(file.lineVisitStatus.LongLength);
             }
 
             if (file.branches != null)
@@ -582,9 +569,7 @@ namespace Palmmedia.ReportGenerator.Core.Parser.Analysis
 
                 foreach (var branchByLine in file.branches)
                 {
-                    ICollection<Branch> existingBranches = null;
-
-                    if (this.branches.TryGetValue(branchByLine.Key, out existingBranches))
+                    if (this.branches.TryGetValue(branchByLine.Key, out ICollection<Branch> existingBranches))
                     {
                         foreach (var branch in branchByLine.Value)
                         {
@@ -644,9 +629,7 @@ namespace Palmmedia.ReportGenerator.Core.Parser.Analysis
 
             foreach (var lineCoverageByTestMethod in file.lineCoveragesByTestMethod)
             {
-                CoverageByTrackedMethod existingTrackedMethodCoverage = null;
-
-                this.lineCoveragesByTestMethod.TryGetValue(lineCoverageByTestMethod.Key, out existingTrackedMethodCoverage);
+                this.lineCoveragesByTestMethod.TryGetValue(lineCoverageByTestMethod.Key, out CoverageByTrackedMethod existingTrackedMethodCoverage);
 
                 if (existingTrackedMethodCoverage == null)
                 {
@@ -710,24 +693,13 @@ namespace Palmmedia.ReportGenerator.Core.Parser.Analysis
             // Resize coverage array if neccessary
             if (lineCoverageByTestMethod.Coverage.LongLength > existingTrackedMethodCoverage.Coverage.LongLength)
             {
-                int[] newLineCoverage = new int[lineCoverageByTestMethod.Coverage.LongLength];
-
-                Array.Copy(lineCoverageByTestMethod.Coverage, newLineCoverage, lineCoverageByTestMethod.Coverage.LongLength);
-
-                for (long i = existingTrackedMethodCoverage.Coverage.LongLength; i < lineCoverageByTestMethod.Coverage.LongLength; i++)
-                {
-                    newLineCoverage[i] = -1;
-                }
-
-                existingTrackedMethodCoverage.Coverage = newLineCoverage;
+                existingTrackedMethodCoverage.Coverage = lineCoverageByTestMethod.Coverage.Resize(lineCoverageByTestMethod.Coverage.LongLength);
             }
 
             // Resize line visit status array if neccessary
             if (lineCoverageByTestMethod.LineVisitStatus.LongLength > existingTrackedMethodCoverage.LineVisitStatus.LongLength)
             {
-                LineVisitStatus[] newLineVisitStatus = new LineVisitStatus[lineCoverageByTestMethod.LineVisitStatus.LongLength];
-                Array.Copy(lineCoverageByTestMethod.LineVisitStatus, newLineVisitStatus, lineCoverageByTestMethod.LineVisitStatus.LongLength);
-                existingTrackedMethodCoverage.LineVisitStatus = newLineVisitStatus;
+                existingTrackedMethodCoverage.LineVisitStatus = lineCoverageByTestMethod.LineVisitStatus.Resize(lineCoverageByTestMethod.LineVisitStatus.LongLength);
             }
 
             for (long i = 0; i < lineCoverageByTestMethod.Coverage.LongLength; i++)

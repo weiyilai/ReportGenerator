@@ -151,13 +151,13 @@ namespace Palmmedia.ReportGenerator.Core.Reporting.Builders
                                 }
                                 else
                                 {
-                                    maxLine = codeFile.LineCoverage.Count - 1;
+                                    maxLine = codeFile.LineCoverage.Length - 1;
                                 }
                             }
 
                             for (int i = codeElement.FirstLine; i <= maxLine; i++)
                             {
-                                if (codeFile.LineCoverage.Count > i)
+                                if (codeFile.LineCoverage.Length > i)
                                 {
                                     lineVisits = Math.Max(lineVisits, codeFile.LineCoverage[i]);
                                 }

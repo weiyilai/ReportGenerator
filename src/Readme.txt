@@ -70,6 +70,10 @@ For further details take a look at LICENSE.txt.
 
 CHANGELOG
 
+5.5.7.0
+
+    * New: #783: Reduce memory usage for large coverage files
+
 5.5.6.0
 
     * Fix: Github Action: Allow runner.temp directory

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NSubstitute;
 using Palmmedia.ReportGenerator.Core.Parser.Analysis;
+using Palmmedia.ReportGenerator.Core.Parser.Analysis.LineCoverage;
 using Palmmedia.ReportGenerator.Core.Parser.FileReading;
 using Xunit;
 
@@ -20,7 +21,7 @@ namespace Palmmedia.ReportGenerator.Core.Test.Parser.Analysis
         [Fact]
         public void Constructor()
         {
-            var sut = new CodeFile("C:\\temp\\Program.cs", new int[] { -1, 0, 2 }, new LineVisitStatus[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered });
+            var sut = new CodeFile("C:\\temp\\Program.cs", CreateLineInfo(new[] { -1, 0, 2 }), CreateLineInfo(new[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered }));
 
             Assert.Equal(2, sut.CoverableLines);
             Assert.Equal(1, sut.CoveredLines);
@@ -41,7 +42,7 @@ namespace Palmmedia.ReportGenerator.Core.Test.Parser.Analysis
                 { 2, new List<Branch>() { new Branch(0, "3"), new Branch(2, "4") } }
             };
 
-            var sut = new CodeFile("C:\\temp\\Program.cs", new int[] { -1, -1, -1, 0, 0, 0, 1, 1, 1 }, new LineVisitStatus[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.Covered, LineVisitStatus.Covered }, branches);
+            var sut = new CodeFile("C:\\temp\\Program.cs", CreateLineInfo(new[] { -1, -1, -1, 0, 0, 0, 1, 1, 1 }), CreateLineInfo(new[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.Covered, LineVisitStatus.Covered }), branches);
 
             Assert.Equal(2, sut.CoveredBranches);
             Assert.Equal(4, sut.TotalBranches);
@@ -53,12 +54,11 @@ namespace Palmmedia.ReportGenerator.Core.Test.Parser.Analysis
         [Fact]
         public void Merge_MergeOneMethodMetric_MethodMetricIsStored()
         {
-            var sut = new CodeFile("C:\\temp\\Program.cs", new int[] { -1, -1, -1, 0, 0, 0, 1, 1, 1 }, new LineVisitStatus[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.Covered, LineVisitStatus.Covered });
+            var sut = new CodeFile("C:\\temp\\Program.cs", CreateLineInfo(new[] { -1, -1, -1, 0, 0, 0, 1, 1, 1 }), CreateLineInfo(new[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.Covered, LineVisitStatus.Covered }));
             var methodMetric = new MethodMetric("Test", "Test", Enumerable.Empty<Metric>());
             sut.AddMethodMetric(methodMetric);
 
-            var codeFileToMerge = new CodeFile("C:\\temp\\Program.cs", new int[] { -1, 0, 1, -1, 0, 1, -1, 0, 1, -1, 0, 1 }, new LineVisitStatus[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered });
-
+            var codeFileToMerge = new CodeFile("C:\\temp\\Program.cs", CreateLineInfo(new[] { -1, 0, 1, -1, 0, 1, -1, 0, 1, -1, 0, 1 }), CreateLineInfo(new[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered }));
             sut.Merge(codeFileToMerge);
 
             Assert.Equal(methodMetric, sut.MethodMetrics.First());
@@ -76,9 +76,9 @@ namespace Palmmedia.ReportGenerator.Core.Test.Parser.Analysis
                 { 1, new List<Branch>() { new Branch(1, "1"), new Branch(0, "2") } },
                 { 2, new List<Branch>() { new Branch(0, "3"), new Branch(2, "4") } }
             };
-            var sut = new CodeFile("C:\\temp\\Program.cs", new int[] { -1, -1, -1, 0, 0, 0, 1, 1, 1 }, new LineVisitStatus[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.Covered, LineVisitStatus.Covered }, branches);
+            var sut = new CodeFile("C:\\temp\\Program.cs", CreateLineInfo(new[] { -1, -1, -1, 0, 0, 0, 1, 1, 1 }), CreateLineInfo(new[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.Covered, LineVisitStatus.Covered }), branches);
 
-            var codeFileToMerge = new CodeFile("C:\\temp\\Program.cs", new int[] { -1, 0, 1, -1, 0, 1, -1, 0, 1, -1, 0, 1 }, new LineVisitStatus[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered });
+            var codeFileToMerge = new CodeFile("C:\\temp\\Program.cs", CreateLineInfo(new[] { -1, 0, 1, -1, 0, 1, -1, 0, 1, -1, 0, 1 }), CreateLineInfo(new[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered }));
 
             sut.Merge(codeFileToMerge);
 
@@ -97,9 +97,9 @@ namespace Palmmedia.ReportGenerator.Core.Test.Parser.Analysis
                 { 1, new List<Branch>() { new Branch(1, "1"), new Branch(0, "2") } },
                 { 2, new List<Branch>() { new Branch(0, "3"), new Branch(2, "4") } }
             };
-            var sut = new CodeFile("C:\\temp\\Program.cs", new int[] { -1, -1, -1, 0, 0, 0, 1, 1, 1 }, new LineVisitStatus[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.Covered, LineVisitStatus.Covered });
+            var sut = new CodeFile("C:\\temp\\Program.cs", CreateLineInfo(new[] { -1, -1, -1, 0, 0, 0, 1, 1, 1 }), CreateLineInfo(new[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.Covered, LineVisitStatus.Covered }));
 
-            var codeFileToMerge = new CodeFile("C:\\temp\\Program.cs", new int[] { -1, 0, 1, -1, 0, 1, -1, 0, 1, -1, 0, 1 }, new LineVisitStatus[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered }, branches);
+            var codeFileToMerge = new CodeFile("C:\\temp\\Program.cs", CreateLineInfo(new[] { -1, 0, 1, -1, 0, 1, -1, 0, 1, -1, 0, 1 }), CreateLineInfo(new[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered }), branches);
 
             sut.Merge(codeFileToMerge);
 
@@ -118,7 +118,7 @@ namespace Palmmedia.ReportGenerator.Core.Test.Parser.Analysis
                 { 1, new List<Branch>() { new Branch(1, "1"), new Branch(0, "2") } },
                 { 2, new List<Branch>() { new Branch(0, "3"), new Branch(0, "4") } }
             };
-            var sut = new CodeFile("C:\\temp\\Program.cs", new int[] { -1, 1, 0 }, new LineVisitStatus[] { LineVisitStatus.NotCoverable, LineVisitStatus.PartiallyCovered, LineVisitStatus.NotCovered }, branches);
+            var sut = new CodeFile("C:\\temp\\Program.cs", CreateLineInfo(new[] { -1, 1, 0 }), CreateLineInfo(new[] { LineVisitStatus.NotCoverable, LineVisitStatus.PartiallyCovered, LineVisitStatus.NotCovered }), branches);
 
             var branches2 = new Dictionary<int, ICollection<Branch>>()
             {
@@ -126,7 +126,7 @@ namespace Palmmedia.ReportGenerator.Core.Test.Parser.Analysis
                 { 2, new List<Branch>() { new Branch(0, "3"), new Branch(2, "4") } }
             };
 
-            var codeFileToMerge = new CodeFile("C:\\temp\\Program.cs", new int[] { -1, 1, 0 }, new LineVisitStatus[] { LineVisitStatus.NotCoverable, LineVisitStatus.PartiallyCovered, LineVisitStatus.PartiallyCovered }, branches2);
+            var codeFileToMerge = new CodeFile("C:\\temp\\Program.cs", CreateLineInfo(new[] { -1, 1, 0 }), CreateLineInfo(new[] { LineVisitStatus.NotCoverable, LineVisitStatus.PartiallyCovered, LineVisitStatus.PartiallyCovered }), branches2);
 
             sut.Merge(codeFileToMerge);
 
@@ -142,10 +142,10 @@ namespace Palmmedia.ReportGenerator.Core.Test.Parser.Analysis
         [Fact]
         public void Merge_MergeCodeFileWithEqualLengthCoverageArray_CoverageInformationIsUpdated()
         {
-            var sut = new CodeFile("C:\\temp\\Program.cs", new int[] { -1, -1, -1, 0, 0, 0, 1, 1, 1 }, new LineVisitStatus[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.Covered, LineVisitStatus.Covered });
-            var codeFileToMerge = new CodeFile("C:\\temp\\Program.cs", new int[] { -1, 0, 1, -1, 0, 1, -1, 0, 1 }, new LineVisitStatus[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered });
+            var sut = new CodeFile("C:\\temp\\Program.cs", CreateLineInfo(new[] { -1, -1, -1, 0, 0, 0, 1, 1, 1 }), CreateLineInfo(new[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.Covered, LineVisitStatus.Covered }));
+            var codeFileToMerge = new CodeFile("C:\\temp\\Program.cs", CreateLineInfo(new[] { -1, 0, 1, -1, 0, 1, -1, 0, 1 }), CreateLineInfo(new[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered }));
             var testMethod = new TestMethod("TestFull", "Test");
-            codeFileToMerge.AddCoverageByTestMethod(testMethod, new CoverageByTrackedMethod() { Coverage = new int[] { -1, -1, -1, 0, 0, 0, 1, 1, 1 }, LineVisitStatus = new LineVisitStatus[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.Covered, LineVisitStatus.Covered } });
+            codeFileToMerge.AddCoverageByTestMethod(testMethod, new CoverageByTrackedMethod() { Coverage = CreateLineInfo(new[] { -1, -1, -1, 0, 0, 0, 1, 1, 1 }), LineVisitStatus = CreateLineInfo(new[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.Covered, LineVisitStatus.Covered }) });
 
             sut.Merge(codeFileToMerge);
 
@@ -169,22 +169,22 @@ namespace Palmmedia.ReportGenerator.Core.Test.Parser.Analysis
                 { 1, new List<Branch>() { new Branch(1, "1"), new Branch(0, "2") } },
                 { 2, new List<Branch>() { new Branch(0, "3"), new Branch(2, "4") } }
             };
-            var sut = new CodeFile("C:\\temp\\Program.cs", new int[] { -1, -1, -1, 0, 0, 0, 1, 1, 1 }, new LineVisitStatus[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.Covered, LineVisitStatus.Covered }, branches);
+            var sut = new CodeFile("C:\\temp\\Program.cs", CreateLineInfo(new[] { -1, -1, -1, 0, 0, 0, 1, 1, 1 }), CreateLineInfo(new[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.Covered, LineVisitStatus.Covered }), branches);
             var testMethod = new TestMethod("TestFull", "Test");
-            sut.AddCoverageByTestMethod(testMethod, new CoverageByTrackedMethod() { Coverage = new int[] { -1, -1, -1, 0, 0, 0, 1, 1, 1 }, LineVisitStatus = new LineVisitStatus[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.Covered, LineVisitStatus.Covered } });
+            sut.AddCoverageByTestMethod(testMethod, new CoverageByTrackedMethod() { Coverage = CreateLineInfo(new[] { -1, -1, -1, 0, 0, 0, 1, 1, 1 }), LineVisitStatus = CreateLineInfo(new[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.Covered, LineVisitStatus.Covered }) });
 
             var branches2 = new Dictionary<int, ICollection<Branch>>()
             {
                 { 1, new List<Branch>() { new Branch(4, "1"), new Branch(3, "5") } },
                 { 3, new List<Branch>() { new Branch(0, "3"), new Branch(2, "4") } }
             };
-            var codeFileToMerge = new CodeFile("C:\\temp\\Program.cs", new int[] { -1, 0, 1, -1, 0, 1, -1, 0, 1, -1, 0, 1 }, new LineVisitStatus[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered }, branches2);
+            var codeFileToMerge = new CodeFile("C:\\temp\\Program.cs", CreateLineInfo(new[] { -1, 0, 1, -1, 0, 1, -1, 0, 1, -1, 0, 1 }), CreateLineInfo(new[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered }), branches2);
             testMethod = new TestMethod("TestFull", "Test");
-            codeFileToMerge.AddCoverageByTestMethod(testMethod, new CoverageByTrackedMethod() { Coverage = new int[] { -1, 0, 1, -1, 0, 1, -1, 0, 1, -1, 0, 1 }, LineVisitStatus = new LineVisitStatus[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered } });
+            codeFileToMerge.AddCoverageByTestMethod(testMethod, new CoverageByTrackedMethod() { Coverage = CreateLineInfo(new[] { -1, 0, 1, -1, 0, 1, -1, 0, 1, -1, 0, 1 }), LineVisitStatus = CreateLineInfo(new[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered }) });
 
             sut.Merge(codeFileToMerge);
 
-            Assert.Equal(10, sut.CoverableLines);
+            Assert.Equal(11, sut.CoverableLines);
             Assert.Equal(6, sut.CoveredLines);
 
             Assert.Equal(4, sut.CoveredBranches);
@@ -199,7 +199,7 @@ namespace Palmmedia.ReportGenerator.Core.Test.Parser.Analysis
         {
             var branches = new Dictionary<int, ICollection<Branch>>();
 
-            var sut = new CodeFile("C:\\temp\\Program.cs", new int[] { }, new LineVisitStatus[] { }, branches);
+            var sut = new CodeFile("C:\\temp\\Program.cs", CreateLineInfo(new int[] { }), CreateLineInfo(new LineVisitStatus[] { }), branches);
             sut.AddCtcDetail(1, new CtcDetails(new List<CtcProbeDetail>()
             {
                 new CtcProbeDetail(true, "1"),
@@ -227,7 +227,7 @@ namespace Palmmedia.ReportGenerator.Core.Test.Parser.Analysis
                 new CtcProbeDetail(false, "4")
             }));
 
-            var codeFileToMerge = new CodeFile("C:\\temp\\Program.cs", new int[] { }, new LineVisitStatus[] { }, branches);
+            var codeFileToMerge = new CodeFile("C:\\temp\\Program.cs", CreateLineInfo(new int[] { }), CreateLineInfo(new LineVisitStatus[] { }), branches);
             codeFileToMerge.AddCtcDetail(1, new CtcDetails(new List<CtcProbeDetail>()
             {
                 new CtcProbeDetail(true, "1"),
@@ -268,7 +268,7 @@ namespace Palmmedia.ReportGenerator.Core.Test.Parser.Analysis
         [Fact]
         public void AnalyzeFile_ExistingFile_AnalysisIsReturned()
         {
-            var sut = new CodeFile("C:\\temp\\Program.cs", new int[] { -2, -1, 0, 1, 2 }, new LineVisitStatus[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.PartiallyCovered, LineVisitStatus.Covered });
+            var sut = new CodeFile("C:\\temp\\Program.cs", CreateLineInfo(new[] { -2, -1, 0, 1, 2 }), CreateLineInfo(new[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.PartiallyCovered, LineVisitStatus.Covered }));
 
             Assert.Null(sut.TotalLines);
 
@@ -303,9 +303,9 @@ namespace Palmmedia.ReportGenerator.Core.Test.Parser.Analysis
         [Fact]
         public void AnalyzeFile_ExistingFileWithTrackedMethods_AnalysisIsReturned()
         {
-            var sut = new CodeFile("C:\\temp\\Program.cs", new int[] { -2, -1, 0, 1 }, new LineVisitStatus[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered });
+            var sut = new CodeFile("C:\\temp\\Program.cs", CreateLineInfo(new[] { -2, -1, 0, 1 }), CreateLineInfo(new[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered }));
             var testMethod = new TestMethod("TestFull", "Test");
-            sut.AddCoverageByTestMethod(testMethod, new CoverageByTrackedMethod() { Coverage = new int[] { -2, 2, -1, 0 }, LineVisitStatus = new LineVisitStatus[] { LineVisitStatus.NotCoverable, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered } });
+            sut.AddCoverageByTestMethod(testMethod, new CoverageByTrackedMethod() { Coverage = CreateLineInfo(new[] { -2, 2, -1, 0 }), LineVisitStatus = CreateLineInfo(new[] { LineVisitStatus.NotCoverable, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered }) });
 
             var fileAnalysis = sut.AnalyzeFile(new CachingFileReader(new LocalFileReader(), 0, null));
 
@@ -319,7 +319,7 @@ namespace Palmmedia.ReportGenerator.Core.Test.Parser.Analysis
         [Fact]
         public void AnalyzeFile_NonExistingFile_AnalysisIsReturned()
         {
-            var sut = new CodeFile("C:\\temp\\Other.cs", new int[] { -2, -1, 0, 1 }, new LineVisitStatus[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered });
+            var sut = new CodeFile("C:\\temp\\Other.cs", CreateLineInfo(new[] { -2, -1, 0, 1 }), CreateLineInfo(new[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered }));
 
             Assert.Null(sut.TotalLines);
 
@@ -345,7 +345,7 @@ namespace Palmmedia.ReportGenerator.Core.Test.Parser.Analysis
 
             var fileReader = Substitute.For<IFileReader>();
 
-            var sut = new CodeFile("C:\\temp\\Other.cs", new int[] { -2, -1, 0, 1 }, new LineVisitStatus[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered }, additionalFileReader);
+            var sut = new CodeFile("C:\\temp\\Other.cs", CreateLineInfo(new[] { -2, -1, 0, 1 }), CreateLineInfo(new[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered }), additionalFileReader);
 
             Assert.Null(sut.TotalLines);
 
@@ -382,7 +382,7 @@ namespace Palmmedia.ReportGenerator.Core.Test.Parser.Analysis
                      return new[] { "Test" };
                  });
 
-            var sut = new CodeFile("C:\\temp\\Other.cs", new int[] { -2, -1, 0, 1 }, new LineVisitStatus[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered }, additionalFileReader);
+            var sut = new CodeFile("C:\\temp\\Other.cs", CreateLineInfo(new[] { -2, -1, 0, 1 }), CreateLineInfo(new[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered }), additionalFileReader);
 
             Assert.Null(sut.TotalLines);
 
@@ -404,9 +404,9 @@ namespace Palmmedia.ReportGenerator.Core.Test.Parser.Analysis
         [Fact]
         public void CodeFile_Equals()
         {
-            var target1 = new CodeFile("C:\\temp\\Program.cs", System.Array.Empty<int>(), System.Array.Empty<LineVisitStatus>());
-            var target2 = new CodeFile("C:\\temp\\Program.cs", System.Array.Empty<int>(), System.Array.Empty<LineVisitStatus>());
-            var target3 = new CodeFile("C:\\temp\\Other.cs", System.Array.Empty<int>(), System.Array.Empty<LineVisitStatus>());
+            var target1 = new CodeFile("C:\\temp\\Program.cs", LineInfoFactory.Create<int>(0, -1), LineInfoFactory.Create<LineVisitStatus>(0, LineVisitStatus.NotCoverable));
+            var target2 = new CodeFile("C:\\temp\\Program.cs", LineInfoFactory.Create<int>(0, -1), LineInfoFactory.Create<LineVisitStatus>(0, LineVisitStatus.NotCoverable));
+            var target3 = new CodeFile("C:\\temp\\Other.cs", LineInfoFactory.Create<int>(0, -1), LineInfoFactory.Create<LineVisitStatus>(0, LineVisitStatus.NotCoverable));
 
             Assert.True(target1.Equals(target2), "Objects are not equal");
             Assert.False(target1.Equals(target3), "Objects are equal");
@@ -420,11 +420,11 @@ namespace Palmmedia.ReportGenerator.Core.Test.Parser.Analysis
         [Fact]
         public void AddCoverageByTestMethod_AddCoverageByTestMethodForExistingMethod_CoverageInformationIsMerged()
         {
-            var sut = new CodeFile("C:\\temp\\Program.cs", System.Array.Empty<int>(), System.Array.Empty<LineVisitStatus>());
+            var sut = new CodeFile("C:\\temp\\Program.cs", LineInfoFactory.Create<int>(0, -1), LineInfoFactory.Create<LineVisitStatus>(0, LineVisitStatus.NotCoverable));
             var testMethod = new TestMethod("TestFull", "Test");
 
-            var coverageByTrackedMethod = new CoverageByTrackedMethod() { Coverage = new int[] { -1, -1, -1, -1, 0, 0, 0, 1, 1, 1 }, LineVisitStatus = new LineVisitStatus[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.Covered, LineVisitStatus.Covered } };
-            var repeatedCoverageByTrackedMethod = new CoverageByTrackedMethod() { Coverage = new int[] { -1, 0, 1, -1, 1, 0, 1, -1, 1, 0 }, LineVisitStatus = new LineVisitStatus[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.Covered, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.Covered, LineVisitStatus.NotCovered } };
+            var coverageByTrackedMethod = new CoverageByTrackedMethod() { Coverage = CreateLineInfo(new[] { -1, -1, -1, -1, 0, 0, 0, 1, 1, 1 }), LineVisitStatus = CreateLineInfo(new[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.Covered, LineVisitStatus.Covered }) };
+            var repeatedCoverageByTrackedMethod = new CoverageByTrackedMethod() { Coverage = CreateLineInfo(new[] { -1, 0, 1, -1, 1, 0, 1, -1, 1, 0 }), LineVisitStatus = CreateLineInfo(new[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.Covered, LineVisitStatus.NotCovered, LineVisitStatus.Covered, LineVisitStatus.NotCoverable, LineVisitStatus.Covered, LineVisitStatus.NotCovered }) };
 
             sut.AddCoverageByTestMethod(testMethod, coverageByTrackedMethod);
             sut.AddCoverageByTestMethod(testMethod, repeatedCoverageByTrackedMethod);
@@ -450,12 +450,24 @@ namespace Palmmedia.ReportGenerator.Core.Test.Parser.Analysis
         [Fact]
         public void CoveredCodeElements()
         {
-            var sut = new CodeFile("C:\\temp\\Program.cs", new int[] { -1, 0, 2 }, new LineVisitStatus[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered });
+            var sut = new CodeFile("C:\\temp\\Program.cs", CreateLineInfo(new[] { -1, 0, 2 }), CreateLineInfo(new[] { LineVisitStatus.NotCoverable, LineVisitStatus.NotCovered, LineVisitStatus.Covered }));
             sut.AddCodeElement(new CodeElement("NotCoverable", CodeElementType.Method, 1, 1, null));
             sut.AddCodeElement(new CodeElement("NotCovered", CodeElementType.Method, 2, 2, null));
             sut.AddCodeElement(new CodeElement("Covered", CodeElementType.Method, 3, 3, 0.5m));
 
             Assert.Equal(1, sut.CoveredCodeElements);
+        }
+
+        private static ILineInfo<T> CreateLineInfo<T>(T[] data)
+        {
+            var result = LineInfoFactory.Create(data.LongLength, default(T));
+
+            for (var i = 0; i < data.Length; i++)
+            {
+                result[i] = data[i];
+            }
+
+            return result;
         }
     }
 }

@@ -1,3 +1,5 @@
+using Palmmedia.ReportGenerator.Core.Parser.Analysis.LineCoverage;
+
 namespace Palmmedia.ReportGenerator.Core.Parser.Analysis
 {
     /// <summary>
@@ -11,11 +13,11 @@ namespace Palmmedia.ReportGenerator.Core.Parser.Analysis
         /// 0: Not visited.
         /// >0: Number of visits.
         /// </summary>
-        internal int[] Coverage { get; set; }
+        internal ILineInfo<int> Coverage { get; set; }
 
         /// <summary>
         /// Gets or sets an array containing the line visit status by line number.
         /// </summary>
-        internal LineVisitStatus[] LineVisitStatus { get; set; }
+        internal ILineInfo<LineVisitStatus> LineVisitStatus { get; set; }
     }
 }

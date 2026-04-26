@@ -54,7 +54,6 @@ namespace Palmmedia.ReportGenerator.Core.Reporting.Builders.Rendering
         /// <summary>
         /// Indicating whether all dates should be included in charts.
         /// </summary>
-
         private readonly bool includeAllDatesInCharts;
 
         /// <summary>
@@ -86,7 +85,6 @@ namespace Palmmedia.ReportGenerator.Core.Reporting.Builders.Rendering
         /// Indicates that that a class report is created (not the summary page).
         /// </summary>
         private bool classReport;
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HtmlRenderer" /> class.
@@ -1412,7 +1410,6 @@ namespace Palmmedia.ReportGenerator.Core.Reporting.Builders.Rendering
                     this.reportTextWriter.WriteLine(" /* ]]> */ </script>");
                 }
             }
-
         }
 
         /// <inheritdoc />

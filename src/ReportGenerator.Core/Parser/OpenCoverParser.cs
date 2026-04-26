@@ -9,6 +9,7 @@ using System.Xml.Linq;
 using Palmmedia.ReportGenerator.Core.Common;
 using Palmmedia.ReportGenerator.Core.Logging;
 using Palmmedia.ReportGenerator.Core.Parser.Analysis;
+using Palmmedia.ReportGenerator.Core.Parser.Analysis.LineCoverage;
 using Palmmedia.ReportGenerator.Core.Parser.FileReading;
 using Palmmedia.ReportGenerator.Core.Parser.Filtering;
 using Palmmedia.ReportGenerator.Core.Properties;
@@ -301,25 +302,26 @@ namespace Palmmedia.ReportGenerator.Core.Parser
                 .SelectMany(s => s.TrackedMethodRefs)
                 .Select(t => t.TrackedMethodId)
                 .Distinct()
-                .ToDictionary(id => id, id => new CoverageByTrackedMethod { Coverage = new int[] { }, LineVisitStatus = new LineVisitStatus[] { } });
+                .ToDictionary(
+                    id => id,
+                    id => new CoverageByTrackedMethod
+                    {
+                        Coverage = LineInfoFactory.Create<int>(0, -1),
+                        LineVisitStatus = LineInfoFactory.Create<LineVisitStatus>(0, LineVisitStatus.NotCoverable)
+                    });
 
-            int[] coverage = new int[] { };
-            LineVisitStatus[] lineVisitStatus = new LineVisitStatus[] { };
+            var coverage = LineInfoFactory.Create<int>(0, -1);
+            var lineVisitStatus = LineInfoFactory.Create<LineVisitStatus>(0, LineVisitStatus.NotCoverable);
 
             if (seqpntsOfFile.Length > 0)
             {
-                coverage = new int[seqpntsOfFile[seqpntsOfFile.LongLength - 1].LineNumberEnd + 1];
-                lineVisitStatus = new LineVisitStatus[seqpntsOfFile[seqpntsOfFile.LongLength - 1].LineNumberEnd + 1];
-
-                for (int i = 0; i < coverage.Length; i++)
-                {
-                    coverage[i] = -1;
-                }
+                coverage = LineInfoFactory.Create<int>(seqpntsOfFile[seqpntsOfFile.LongLength - 1].LineNumberEnd + 1, -1);
+                lineVisitStatus = LineInfoFactory.Create<LineVisitStatus>(seqpntsOfFile[seqpntsOfFile.LongLength - 1].LineNumberEnd + 1, LineVisitStatus.NotCoverable);
 
                 foreach (var trackedMethodCoverage in coverageByTrackedMethod)
                 {
-                    trackedMethodCoverage.Value.Coverage = (int[])coverage.Clone();
-                    trackedMethodCoverage.Value.LineVisitStatus = new LineVisitStatus[seqpntsOfFile[seqpntsOfFile.LongLength - 1].LineNumberEnd + 1];
+                    trackedMethodCoverage.Value.Coverage = coverage.Clone();
+                    trackedMethodCoverage.Value.LineVisitStatus = lineVisitStatus.Clone();
                 }
 
                 foreach (var seqpnt in seqpntsOfFile)

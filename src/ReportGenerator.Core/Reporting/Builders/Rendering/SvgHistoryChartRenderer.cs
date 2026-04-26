@@ -391,7 +391,6 @@ namespace Palmmedia.ReportGenerator.Core.Reporting.Builders.Rendering
 
             sb.AppendLine("</g>");
 
-
             sb.AppendLine("<g>");
             sb.AppendLine($@"<text x=""45"" y=""10"" class=""ct-label"">{minMaxValue}</text>");
             sb.AppendLine($@"<text x=""45"" y=""100"" class=""ct-label"">-{minMaxValue}</text>");

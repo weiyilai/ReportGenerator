@@ -1,5 +1,6 @@
 using System.Linq;
 using Palmmedia.ReportGenerator.Core.Parser.Analysis;
+using Palmmedia.ReportGenerator.Core.Parser.Analysis.LineCoverage;
 using Xunit;
 
 namespace Palmmedia.ReportGenerator.Core.Test.Parser.Analysis
@@ -37,7 +38,7 @@ namespace Palmmedia.ReportGenerator.Core.Test.Parser.Analysis
         {
             var assembly = new Assembly("C:\\test\\TestAssembly.dll");
             var sut = new Class("Test", assembly);
-            var file = new CodeFile("C:\\temp\\Program.cs", System.Array.Empty<int>(), System.Array.Empty<LineVisitStatus>());
+            var file = new CodeFile("C:\\temp\\Program.cs", LineInfoFactory.Create<int>(0, -1), LineInfoFactory.Create<LineVisitStatus>(0, LineVisitStatus.NotCoverable));
             sut.AddFile(file);
 
             Assert.Equal(file, sut.Files.First());
