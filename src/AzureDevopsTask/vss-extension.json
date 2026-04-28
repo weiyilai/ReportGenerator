@@ -42,7 +42,19 @@
     },
     "links": {
         "getstarted": {
+            "uri": "https://reportgenerator.io/getstarted"
+        },
+        "learn": {
             "uri": "https://reportgenerator.io/usage"
+        },
+        "privacypolicy": {
+            "uri": "https://reportgenerator.io/privacy"
+        },
+        "support": {
+            "uri": "https://reportgenerator.io/contact"
+        },
+        "license": {
+            "uri": "https://reportgenerator.io/license"
         },
         "source": {
             "uri": "https://github.com/danielpalme/ReportGenerator"
