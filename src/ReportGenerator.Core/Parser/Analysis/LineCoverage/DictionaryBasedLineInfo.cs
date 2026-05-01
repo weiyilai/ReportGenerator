@@ -73,6 +73,7 @@ namespace Palmmedia.ReportGenerator.Core.Parser.Analysis.LineCoverage
             {
                 if (EqualityComparer<T>.Default.Equals(this.defaultValue, value))
                 {
+                    this.data.Remove(index);
                     return;
                 }
 
