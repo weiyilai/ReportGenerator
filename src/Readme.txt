@@ -70,6 +70,10 @@ For further details take a look at LICENSE.txt.
 
 CHANGELOG
 
+5.5.8.0
+
+    * New: Azure DevOps: Added metadata to become a trusted publisher
+
 5.5.7.0
 
     * New: #783: Reduce memory usage for large coverage files
