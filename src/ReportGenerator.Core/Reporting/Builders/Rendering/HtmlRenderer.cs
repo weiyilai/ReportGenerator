@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.ObjectPool;
 using Palmmedia.ReportGenerator.Core.CodeAnalysis;
@@ -521,7 +522,7 @@ namespace Palmmedia.ReportGenerator.Core.Reporting.Builders.Rendering
             foreach (var assembly in assemblies)
             {
                 this.javaScriptContent.AppendLine("  {");
-                this.javaScriptContent.AppendFormat("    \"name\": \"{0}\",", assembly.Name.Replace(@"\", @"\\"));
+                this.javaScriptContent.AppendFormat("    \"name\": \"{0}\",", JavaScriptEncoder.Default.Encode(assembly.Name));
                 this.javaScriptContent.AppendLine();
                 this.javaScriptContent.AppendLine("    \"classes\": [");
 
@@ -567,7 +568,7 @@ namespace Palmmedia.ReportGenerator.Core.Reporting.Builders.Rendering
                                 historicCoverage.ExecutionTime.ToShortDateString(),
                                 historicCoverage.ExecutionTime.ToLongTimeString(),
                                 string.IsNullOrEmpty(historicCoverage.Tag) ? string.Empty : " - ",
-                                historicCoverage.Tag,
+                                JavaScriptEncoder.Default.Encode(historicCoverage.Tag ?? string.Empty),
                                 historicCoverage.CoveredLines.ToString(CultureInfo.InvariantCulture),
                                 (historicCoverage.CoverableLines - historicCoverage.CoveredLines).ToString(CultureInfo.InvariantCulture),
                                 historicCoverage.CoverableLines.ToString(CultureInfo.InvariantCulture),
@@ -629,7 +630,7 @@ namespace Palmmedia.ReportGenerator.Core.Reporting.Builders.Rendering
 
                                 this.javaScriptContent.AppendFormat(
                                     " \"{0}\": {1}",
-                                    firstMetric.Abbreviation,
+                                    JavaScriptEncoder.Default.Encode(firstMetric.Abbreviation),
                                     value.Value.ToString(CultureInfo.InvariantCulture));
                             }
                         }
@@ -638,10 +639,10 @@ namespace Palmmedia.ReportGenerator.Core.Reporting.Builders.Rendering
                     }
 
                     this.javaScriptContent.Append("      { ");
-                    this.javaScriptContent.AppendFormat("\"name\": \"{0}\",", @class.DisplayName.Replace(@"\", @"\\"));
+                    this.javaScriptContent.AppendFormat("\"name\": \"{0}\",", JavaScriptEncoder.Default.Encode(@class.DisplayName));
                     this.javaScriptContent.AppendFormat(
                         " \"rp\": \"{0}\",",
-                        this.onlySummary ? string.Empty : this.GetClassReportFilename(@class.Assembly, @class.Name));
+                        this.onlySummary ? string.Empty : JavaScriptEncoder.Default.Encode(this.GetClassReportFilename(@class.Assembly, @class.Name)));
                     this.javaScriptContent.AppendFormat(" \"cl\": {0},", @class.CoveredLines.ToString(CultureInfo.InvariantCulture));
                     this.javaScriptContent.AppendFormat(" \"ucl\": {0},", (@class.CoverableLines - @class.CoveredLines).ToString(CultureInfo.InvariantCulture));
                     this.javaScriptContent.AppendFormat(" \"cal\": {0},", @class.CoverableLines.ToString(CultureInfo.InvariantCulture));
@@ -686,9 +687,9 @@ namespace Palmmedia.ReportGenerator.Core.Reporting.Builders.Rendering
 
                 this.javaScriptContent.AppendFormat(
                     "{{ \"name\": \"{0}\", \"abbreviation\": \"{1}\", \"explanationUrl\": \"{2}\" }}",
-                    item.Key,
-                    item.Value.Abbreviation,
-                    item.Value.ExplanationUrl);
+                    JavaScriptEncoder.Default.Encode(item.Key),
+                    JavaScriptEncoder.Default.Encode(item.Value.Abbreviation),
+                    JavaScriptEncoder.Default.Encode(item.Value.ExplanationUrl.ToString()));
             }
 
             this.javaScriptContent.AppendLine("];");
@@ -725,8 +726,8 @@ namespace Palmmedia.ReportGenerator.Core.Reporting.Builders.Rendering
                 foreach (var metric in riskHotspots.First().StatusMetrics)
                 {
                     this.javaScriptContent.Append("      { ");
-                    this.javaScriptContent.AppendFormat("\"name\": \"{0}\",", metric.Metric.Name);
-                    this.javaScriptContent.AppendFormat(" \"explanationUrl\": \"{0}\"", metric.Metric.ExplanationUrl);
+                    this.javaScriptContent.AppendFormat("\"name\": \"{0}\",", JavaScriptEncoder.Default.Encode(metric.Metric.Name));
+                    this.javaScriptContent.AppendFormat(" \"explanationUrl\": \"{0}\"", JavaScriptEncoder.Default.Encode(metric.Metric.ExplanationUrl.ToString()));
                     this.javaScriptContent.AppendLine(" },");
                 }
             }
@@ -740,11 +741,11 @@ namespace Palmmedia.ReportGenerator.Core.Reporting.Builders.Rendering
             foreach (var riskHotspot in riskHotspots)
             {
                 this.javaScriptContent.AppendLine("  {");
-                this.javaScriptContent.AppendFormat("    \"assembly\": \"{0}\",", riskHotspot.Assembly.ShortName);
-                this.javaScriptContent.AppendFormat(" \"class\": \"{0}\",", riskHotspot.Class.DisplayName);
-                this.javaScriptContent.AppendFormat(" \"reportPath\": \"{0}\",", this.onlySummary ? string.Empty : this.GetClassReportFilename(riskHotspot.Assembly, riskHotspot.Class.Name));
-                this.javaScriptContent.AppendFormat(" \"methodName\": \"{0}\",", riskHotspot.MethodMetric.FullName);
-                this.javaScriptContent.AppendFormat(" \"methodShortName\": \"{0}\",", riskHotspot.MethodMetric.ShortName);
+                this.javaScriptContent.AppendFormat("    \"assembly\": \"{0}\",", JavaScriptEncoder.Default.Encode(riskHotspot.Assembly.ShortName));
+                this.javaScriptContent.AppendFormat(" \"class\": \"{0}\",", JavaScriptEncoder.Default.Encode(riskHotspot.Class.DisplayName));
+                this.javaScriptContent.AppendFormat(" \"reportPath\": \"{0}\",", this.onlySummary ? string.Empty : JavaScriptEncoder.Default.Encode(this.GetClassReportFilename(riskHotspot.Assembly, riskHotspot.Class.Name)));
+                this.javaScriptContent.AppendFormat(" \"methodName\": \"{0}\",", JavaScriptEncoder.Default.Encode(riskHotspot.MethodMetric.FullName));
+                this.javaScriptContent.AppendFormat(" \"methodShortName\": \"{0}\",", JavaScriptEncoder.Default.Encode(riskHotspot.MethodMetric.ShortName));
                 this.javaScriptContent.AppendFormat(" \"fileIndex\": {0},", riskHotspot.FileIndex);
                 this.javaScriptContent.AppendFormat(" \"line\": {0},", !this.onlySummary && riskHotspot.MethodMetric.Line.HasValue ? riskHotspot.MethodMetric.Line.Value.ToString(CultureInfo.InvariantCulture) : "null");
                 this.javaScriptContent.AppendLine();
