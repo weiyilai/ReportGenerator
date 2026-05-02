@@ -768,6 +768,7 @@ namespace Palmmedia.ReportGenerator.Core.Reporting.Builders.Rendering
 
             this.javaScriptContent.AppendLine("var branchCoverageAvailable = " + branchCoverageAvailable.ToString().ToLowerInvariant() + ";");
             this.javaScriptContent.AppendLine("var methodCoverageAvailable = " + methodCoverageAvailable.ToString().ToLowerInvariant() + ";");
+            this.javaScriptContent.AppendLine("var applyQueryStringToAllLinks = " + (this.htmlMode == HtmlMode.ExternalCssAndJavaScriptWithQueryStringHandling).ToString().ToLowerInvariant() + ";");
             this.javaScriptContent.AppendLine("var applyMaximumGroupingLevel = " + applyMaximumGroupingLevel.ToString().ToLowerInvariant() + ";");
             this.javaScriptContent.AppendLine("var maximumDecimalPlacesForCoverageQuotas = " + MathExtensions.MaximumDecimalPlaces + ";");
             this.javaScriptContent.AppendLine();

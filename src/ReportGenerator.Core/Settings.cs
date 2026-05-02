@@ -103,5 +103,10 @@ namespace Palmmedia.ReportGenerator.Core
         /// Gets or sets a value indicating whether empty trailing line in source files should be preserved.
         /// </summary>
         public bool PreserveTrailingEmptyLine { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the query string should be applied to all links and CSS references.
+        /// </summary>
+        public bool ApplyQueryStringToAllLinks { get; set; }
     }
 }

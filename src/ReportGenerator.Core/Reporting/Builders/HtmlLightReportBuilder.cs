@@ -11,11 +11,6 @@ namespace Palmmedia.ReportGenerator.Core.Reporting.Builders
     public class HtmlLightReportBuilder : HtmlReportBuilderBase
     {
         /// <summary>
-        /// Defines how CSS and JavaScript are referenced.
-        /// </summary>
-        private readonly HtmlMode htmlMode;
-
-        /// <summary>
         /// Dictionary containing the filenames of the class reports by class.
         /// </summary>
         private readonly IDictionary<string, string> fileNameByClass = new Dictionary<string, string>();
@@ -24,18 +19,7 @@ namespace Palmmedia.ReportGenerator.Core.Reporting.Builders
         /// Initializes a new instance of the <see cref="HtmlLightReportBuilder" /> class.
         /// </summary>
         public HtmlLightReportBuilder()
-            : this(true)
         {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HtmlLightReportBuilder" /> class.
-        /// </summary>
-        /// <param name="externalCssAndJavaScriptWithQueryStringHandling">Defines how CSS and JavaScript are referenced.</param>
-        public HtmlLightReportBuilder(bool externalCssAndJavaScriptWithQueryStringHandling)
-        {
-            this.htmlMode = externalCssAndJavaScriptWithQueryStringHandling ? HtmlMode.ExternalCssAndJavaScriptWithQueryStringHandling
-                : HtmlMode.ExternalCssAndJavaScript;
         }
 
         /// <summary>
@@ -53,7 +37,17 @@ namespace Palmmedia.ReportGenerator.Core.Reporting.Builders
         /// <param name="fileAnalyses">The file analyses that correspond to the class.</param>
         public override void CreateClassReport(Class @class, IEnumerable<FileAnalysis> fileAnalyses)
         {
-            using (var renderer = new HtmlRenderer(this.fileNameByClass, false, this.htmlMode, "custom.css", null, this.ReportContext.Settings.IncludeAllDatesInCharts))
+            var htmlMode = this.ReportContext.Settings.ApplyQueryStringToAllLinks ?
+                HtmlMode.ExternalCssAndJavaScriptWithQueryStringHandling
+                : HtmlMode.ExternalCssAndJavaScript;
+
+            using (var renderer = new HtmlRenderer(
+                this.fileNameByClass,
+                false,
+                htmlMode,
+                "custom.css",
+                null,
+                this.ReportContext.Settings.IncludeAllDatesInCharts))
             {
                 this.CreateClassReport(renderer, @class, fileAnalyses);
             }
@@ -65,7 +59,17 @@ namespace Palmmedia.ReportGenerator.Core.Reporting.Builders
         /// <param name="summaryResult">The summary result.</param>
         public override void CreateSummaryReport(SummaryResult summaryResult)
         {
-            using (var renderer = new HtmlRenderer(this.fileNameByClass, false, this.htmlMode, "custom.css", null, this.ReportContext.Settings.IncludeAllDatesInCharts))
+            var htmlMode = this.ReportContext.Settings.ApplyQueryStringToAllLinks ?
+                HtmlMode.ExternalCssAndJavaScriptWithQueryStringHandling
+                : HtmlMode.ExternalCssAndJavaScript;
+
+            using (var renderer = new HtmlRenderer(
+                this.fileNameByClass,
+                false,
+                htmlMode,
+                "custom.css",
+                null,
+                this.ReportContext.Settings.IncludeAllDatesInCharts))
             {
                 this.CreateSummaryReport(renderer, summaryResult);
             }

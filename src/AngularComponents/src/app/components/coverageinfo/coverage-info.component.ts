@@ -404,6 +404,7 @@ export class CoverageInfoComponent {
   historicCoverageExecutionTimes: string[] = [];
   branchCoverageAvailable: boolean = false;
   methodCoverageAvailable: boolean = false;
+  applyQueryStringToAllLinks: boolean = false;
   metrics: Metric[] = [];
   codeElements: CodeElementViewModel[] = [];
   translations: any = { };
@@ -431,6 +432,7 @@ export class CoverageInfoComponent {
     this.historicCoverageExecutionTimes = (<any>this.window).historicCoverageExecutionTimes;
     this.branchCoverageAvailable = (<any>this.window).branchCoverageAvailable;
     this.methodCoverageAvailable = (<any>this.window).methodCoverageAvailable;
+    this.applyQueryStringToAllLinks = (<any>this.window).applyQueryStringToAllLinks;
     this.metrics = (<any>this.window).metrics;
 
     this.translations = (<any>this.window).translations;
@@ -476,7 +478,7 @@ export class CoverageInfoComponent {
 
     const startOfQueryString: number = window.location.href.indexOf("?");
 
-    if (startOfQueryString > -1) {
+    if (this.applyQueryStringToAllLinks && startOfQueryString > -1) {
       this.queryString = window.location.href.substring(startOfQueryString);
     }
 

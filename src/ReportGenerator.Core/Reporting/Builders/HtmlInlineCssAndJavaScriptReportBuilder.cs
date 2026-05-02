@@ -30,7 +30,11 @@ namespace Palmmedia.ReportGenerator.Core.Reporting.Builders
         /// <param name="fileAnalyses">The file analyses that correspond to the class.</param>
         public override void CreateClassReport(Class @class, IEnumerable<FileAnalysis> fileAnalyses)
         {
-            using (var renderer = new HtmlRenderer(this.fileNameByClass, false, HtmlMode.InlineCssAndJavaScript, includeAllDatesInCharts: this.ReportContext.Settings.IncludeAllDatesInCharts))
+            using (var renderer = new HtmlRenderer(
+                this.fileNameByClass,
+                false,
+                HtmlMode.InlineCssAndJavaScript,
+                includeAllDatesInCharts: this.ReportContext.Settings.IncludeAllDatesInCharts))
             {
                 this.CreateClassReport(renderer, @class, fileAnalyses);
             }
@@ -42,7 +46,11 @@ namespace Palmmedia.ReportGenerator.Core.Reporting.Builders
         /// <param name="summaryResult">The summary result.</param>
         public override void CreateSummaryReport(SummaryResult summaryResult)
         {
-            using (var renderer = new HtmlRenderer(this.fileNameByClass, false, HtmlMode.InlineCssAndJavaScript, includeAllDatesInCharts: this.ReportContext.Settings.IncludeAllDatesInCharts))
+            using (var renderer = new HtmlRenderer(
+                this.fileNameByClass,
+                false,
+                HtmlMode.InlineCssAndJavaScript,
+                includeAllDatesInCharts: this.ReportContext.Settings.IncludeAllDatesInCharts))
             {
                 this.CreateSummaryReport(renderer, summaryResult);
             }
